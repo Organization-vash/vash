@@ -18,4 +18,3 @@ public class Survey {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime created_at;
 }
-

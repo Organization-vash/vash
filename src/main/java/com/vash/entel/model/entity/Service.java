@@ -17,12 +17,12 @@ public class Service {
     private String name;
 
     @Column(name = "type", nullable = false)
-    private String tyoe;
+    private String type;
 
     @Column(columnDefinition = "TEXT")
     private String description;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
-}
 
+}
