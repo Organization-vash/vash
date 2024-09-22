@@ -15,11 +15,13 @@ public class Attention {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(nullable = false)
-    private LocalTime hour;
+    private LocalDateTime time;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime created_at;
+
+    @Column(name = "update_at")
+    private LocalDateTime updated_at;
 
     @Enumerated(EnumType.STRING)
     private AttentionStatus attentionStatus;
