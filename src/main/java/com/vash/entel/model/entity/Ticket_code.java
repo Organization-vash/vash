@@ -15,8 +15,8 @@ public class Ticket_code {
     @Column(name = "code", nullable = false)
     private String code;
 
-    @Column(name = "created_at", nullable = false)
-    private LocalDateTime created_at;
+    @Column(name = "created", nullable = false)
+    private LocalDateTime created;
 
     @ManyToOne
     @JoinColumn(name = "service_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_ticket_service"))
