@@ -47,5 +47,4 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
         return new ResponseEntity<>(err, HttpStatus.UNPROCESSABLE_ENTITY);
     }
-
 }

@@ -1,6 +1,7 @@
 package com.vash.entel.service;
 
 import com.vash.entel.dto.UserDTO;
+import com.vash.entel.model.entity.User;
 
 import java.util.List;
 

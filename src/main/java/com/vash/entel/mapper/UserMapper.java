@@ -13,13 +13,11 @@ public class UserMapper {
         this.modelMapper = modelMapper;
     }
 
-    // Convertir de User a UserDTO
     public UserDTO toUserDTO (User user){
         UserDTO userDTO = modelMapper.map(user, UserDTO.class);
         return userDTO;
     }
 
-    // Convertir de UserDTO a User
     public User toUserEntity (UserDTO userDTO){
         return modelMapper.map(userDTO, User.class);
     }

@@ -61,6 +61,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Transactional
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
+    @Transactional
     @Override
     public UserDTO updateUser(Integer id, UserDTO userDTO) {
         User user = userRepository.findById(id)
@@ -74,7 +80,6 @@ public class UserServiceImpl implements UserService {
                     throw new BadRequestException("Ya existe un usuario con el mismo número de documento");
                 });
 
-        // Actualizar los campos
         user.setName(userDTO.getName());
         user.setLastName(userDTO.getLastName());
         user.setDocument(userDTO.getDocument());

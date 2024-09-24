@@ -40,10 +40,10 @@ public class UserDTO {
     @NotNull(message = "El rol es obligatorio")
     private Role role;
 
-    public UserDTO() {
+    public UserDTO(){
+
     }
 
-    //Constructor, Getters y Setters
     public UserDTO(Integer id, String document, Integer numberDoc, String name, String lastName, String email, String password, Role role) {
         this.id = id;
         this.document = document;
