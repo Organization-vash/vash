@@ -19,13 +19,13 @@ public class User {
     private String document;
 
     @Column(name = "number_doc", nullable = false, unique = true)
-    private Integer number_doc;
+    private Integer numberDoc;
 
     @Column(name = "name", nullable = false)
     private String name;
 
     @Column(name = "last_name", nullable = false)
-    private String last_name;
+    private String lastName;
 
     private String email;
 
