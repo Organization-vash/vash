@@ -28,4 +28,3 @@ public class Service {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 }
-

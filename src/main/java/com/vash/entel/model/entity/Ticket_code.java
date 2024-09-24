@@ -6,8 +6,8 @@ import java.time.LocalDateTime;
 
 @Data
 @Entity
-@Table(name = "tickets")
-public class Ticket {
+@Table(name = "tickets_code")
+public class Ticket_code {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;

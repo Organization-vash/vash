@@ -13,12 +13,13 @@ public class Customer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "DNI", nullable = false)
-    private Integer dni;
+    @Column(name = "doc_number", nullable = false)
+    private Integer doc_number;
 
-    @Column(name = "name", nullable = false)
-    private String name;
+    @Column(name = "fullname", nullable = false)
+    private String fullname;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
+
 }
