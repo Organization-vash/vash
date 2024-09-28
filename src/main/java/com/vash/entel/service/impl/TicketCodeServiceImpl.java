@@ -50,6 +50,6 @@ public class TicketCodeServiceImpl implements TicketCodeService {
     }
 
     private int extractNumber(String code) {
-        return Integer.parseInt(code.substring(1)); // Extraemos los números después de la letra
+        return Integer.parseInt(code.substring(1)); 
     }
 }
