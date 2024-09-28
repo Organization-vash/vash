@@ -11,4 +11,5 @@ public interface UserService {
     UserDTO findById(Integer id);
     UserDTO updateUser(Integer id, UserDTO userDTO);
     void delete(Integer id);
+    void validateDocument(UserDTO userDTO);
 }

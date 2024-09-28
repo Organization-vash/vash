@@ -1,20 +1,22 @@
 package com.vash.entel.dto;
 
 import com.vash.entel.model.enums.Role;
+import com.vash.entel.model.enums.DocumentType;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 @Data
 public class UserDTO {
     private Integer id;
 
-    @NotBlank(message = "El documento es obligatorio")
-    private String document;
+    @NotNull(message = "El documento es obligatorio")
+    private DocumentType documentType;
 
-    @Min(value = 10000000, message = "El número de documento debe tener al menos 8 dígitos")
-    @Max(value = 999999999, message = "El número de documento debe tener como mínimo 8 y máximo 9 dígitos")
+    @Min(value = 100000, message = "El número de documento debe tener al menos 6 dígitos")
     @NotNull(message = "El número de documento es obligatorio")
     private Integer numberDoc;
 
@@ -25,6 +27,11 @@ public class UserDTO {
     @NotBlank(message = "El apellido es obligatorio")
     @Pattern(regexp = "^[a-zA-Z ]+$", message = "El apellido solo puede contener letras")
     private String lastName;
+
+    @Setter
+    @Getter
+    @NotNull(message = "El ID del módulo es obligatorio")
+    private Integer moduleId;
 
     @NotBlank(message = "El email es obligatorio")
     private String email;
@@ -44,14 +51,17 @@ public class UserDTO {
 
     }
 
-    public UserDTO(Integer id, String document, Integer numberDoc, String name, String lastName, String email, String password, Role role) {
+
+    public UserDTO(Integer id, DocumentType documentType, Integer numberDoc, String name, String lastName, Integer moduleId, String email, String password, Role role) {
         this.id = id;
-        this.document = document;
+        this.documentType = documentType;
         this.numberDoc = numberDoc;
         this.name = name;
         this.lastName = lastName;
+        this.moduleId = moduleId;
         this.email = email;
         this.password = password;
         this.role = role;
     }
+
 }

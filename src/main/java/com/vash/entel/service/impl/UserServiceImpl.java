@@ -5,6 +5,7 @@ import com.vash.entel.exception.BadRequestException;
 import com.vash.entel.exception.ResourceNotFoundException;
 import com.vash.entel.mapper.UserMapper;
 import com.vash.entel.model.entity.User;
+import com.vash.entel.model.enums.DocumentType;
 import com.vash.entel.repository.UserRepository;
 import com.vash.entel.service.UserService;
 import jakarta.transaction.Transactional;
@@ -33,6 +34,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public UserDTO createUser(UserDTO userDTO) {
+        validateDocument(userDTO);
         userRepository.findByNameAndLastName(userDTO.getName(), userDTO.getLastName())
                 .ifPresent(existingUser -> {
                     throw new BadRequestException("El usuario ya existe con el mismo nombre y apellido");
@@ -82,7 +84,7 @@ public class UserServiceImpl implements UserService {
 
         user.setName(userDTO.getName());
         user.setLastName(userDTO.getLastName());
-        user.setDocument(userDTO.getDocument());
+        user.setDocumentType(userDTO.getDocumentType());
         user.setNumberDoc(userDTO.getNumberDoc());
         user.setEmail(userDTO.getEmail());
         user.setPassword(userDTO.getPassword());
@@ -100,5 +102,18 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("El usuario con ID " + id + " no fue encontrado"));
         userRepository.delete(user);
+    }
+
+    public void validateDocument(UserDTO userDTO) {
+        int numberLength = String.valueOf(userDTO.getNumberDoc()).length();
+
+        if (userDTO.getDocumentType() == DocumentType.DNI && numberLength != 8) {
+            throw new IllegalArgumentException("El DNI debe tener exactamente 8 dígitos.");
+        } else if ((userDTO.getDocumentType() == DocumentType.PASAPORTE ||
+                userDTO.getDocumentType() == DocumentType.PTP ||
+                userDTO.getDocumentType() == DocumentType.CARNET_EXTRANJERIA)
+                && (numberLength < 6 || numberLength > 20)) {
+            throw new IllegalArgumentException("El número de documento debe tener entre 6 y 20 dígitos para documentos extranjeros.");
+        }
     }
 }
