@@ -34,6 +34,12 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public UserDTO createUser(UserDTO userDTO) {
+
+        userRepository.findByModuleId(userDTO.getModuleId())
+                .ifPresent(existingUser -> {
+                    throw new BadRequestException("El módulo ya está siendo utilizado");
+                });
+
         validateDocument(userDTO);
         userRepository.findByNameAndLastName(userDTO.getName(), userDTO.getLastName())
                 .ifPresent(existingUser -> {
@@ -47,6 +53,9 @@ public class UserServiceImpl implements UserService {
                 .ifPresent(existingUser -> {
                     throw new BadRequestException("El documento ya existe");
                 });
+
+        String username = generateUsername(userDTO.getName(), userDTO.getLastName(), userDTO.getModuleId());
+        userDTO.setUsername(username);
         User user = userMapper.toUserEntity(userDTO);
         user.setCreatedAt(LocalDateTime.now());
         User savedUser = userRepository.save(user);
@@ -116,4 +125,15 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("El número de documento debe tener entre 6 y 20 dígitos para documentos extranjeros.");
         }
     }
+
+    public String generateUsername(String firstName, String lastName, Integer moduleId) {
+        // Get the first letter of the first name and convert it to uppercase
+        String firstInitial = firstName.substring(0, 1).toUpperCase();
+
+        String fullLastName = lastName.toUpperCase();
+
+        return firstInitial + fullLastName + moduleId;
+    }
+
+
 }

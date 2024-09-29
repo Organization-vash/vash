@@ -12,4 +12,5 @@ public interface UserService {
     UserDTO updateUser(Integer id, UserDTO userDTO);
     void delete(Integer id);
     void validateDocument(UserDTO userDTO);
+    String generateUsername(String firstName, String lastName, Integer moduleId);
 }

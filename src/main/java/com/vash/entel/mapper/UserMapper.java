@@ -21,6 +21,7 @@ public class UserMapper {
     public UserDTO toUserDTO(User user){
         UserDTO userDTO = modelMapper.map(user, UserDTO.class);
         userDTO.setModuleId(user.getModule().getId()); // Asignar el ID del módulo
+        userDTO.setUsername(user.getUsername());
         return userDTO;
     }
 

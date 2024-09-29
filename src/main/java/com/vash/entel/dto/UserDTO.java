@@ -47,12 +47,13 @@ public class UserDTO {
     @NotNull(message = "El rol es obligatorio")
     private Role role;
 
-    public UserDTO(){
+    private String username;
 
+    public UserDTO(){
     }
 
 
-    public UserDTO(Integer id, DocumentType documentType, Integer numberDoc, String name, String lastName, Integer moduleId, String email, String password, Role role) {
+    public UserDTO(Integer id, DocumentType documentType, Integer numberDoc, String name, String lastName, Integer moduleId, String email, String password, Role role, String username) {
         this.id = id;
         this.documentType = documentType;
         this.numberDoc = numberDoc;
@@ -62,6 +63,7 @@ public class UserDTO {
         this.email = email;
         this.password = password;
         this.role = role;
+        this.username = username;
     }
 
 }
