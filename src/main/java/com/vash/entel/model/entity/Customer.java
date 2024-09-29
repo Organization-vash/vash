@@ -14,7 +14,7 @@ public class Customer {
     private Integer id;
 
     @Column(name = "doc_number", nullable = false)
-    private Integer doc_number;
+    private Long docNumber;
 
     @Column(name = "fullname", nullable = false)
     private String fullname;
