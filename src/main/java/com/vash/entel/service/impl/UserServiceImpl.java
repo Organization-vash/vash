@@ -5,6 +5,7 @@ import com.vash.entel.exception.BadRequestException;
 import com.vash.entel.exception.ResourceNotFoundException;
 import com.vash.entel.mapper.UserMapper;
 import com.vash.entel.model.entity.User;
+import com.vash.entel.model.enums.DocumentType;
 import com.vash.entel.repository.UserRepository;
 import com.vash.entel.service.UserService;
 import jakarta.transaction.Transactional;
@@ -33,6 +34,13 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public UserDTO createUser(UserDTO userDTO) {
+
+        userRepository.findByModuleId(userDTO.getModuleId())
+                .ifPresent(existingUser -> {
+                    throw new BadRequestException("El módulo ya está siendo utilizado");
+                });
+
+        validateDocument(userDTO);
         userRepository.findByNameAndLastName(userDTO.getName(), userDTO.getLastName())
                 .ifPresent(existingUser -> {
                     throw new BadRequestException("El usuario ya existe con el mismo nombre y apellido");
@@ -45,6 +53,9 @@ public class UserServiceImpl implements UserService {
                 .ifPresent(existingUser -> {
                     throw new BadRequestException("El documento ya existe");
                 });
+
+        String username = generateUsername(userDTO.getName(), userDTO.getLastName(), userDTO.getModuleId());
+        userDTO.setUsername(username);
         User user = userMapper.toUserEntity(userDTO);
         user.setCreatedAt(LocalDateTime.now());
         User savedUser = userRepository.save(user);
@@ -82,7 +93,7 @@ public class UserServiceImpl implements UserService {
 
         user.setName(userDTO.getName());
         user.setLastName(userDTO.getLastName());
-        user.setDocument(userDTO.getDocument());
+        user.setDocumentType(userDTO.getDocumentType());
         user.setNumberDoc(userDTO.getNumberDoc());
         user.setEmail(userDTO.getEmail());
         user.setPassword(userDTO.getPassword());
@@ -101,4 +112,28 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("El usuario con ID " + id + " no fue encontrado"));
         userRepository.delete(user);
     }
+
+    public void validateDocument(UserDTO userDTO) {
+        int numberLength = String.valueOf(userDTO.getNumberDoc()).length();
+
+        if (userDTO.getDocumentType() == DocumentType.DNI && numberLength != 8) {
+            throw new IllegalArgumentException("El DNI debe tener exactamente 8 dígitos.");
+        } else if ((userDTO.getDocumentType() == DocumentType.PASAPORTE ||
+                userDTO.getDocumentType() == DocumentType.PTP ||
+                userDTO.getDocumentType() == DocumentType.CARNET_EXTRANJERIA)
+                && (numberLength < 6 || numberLength > 20)) {
+            throw new IllegalArgumentException("El número de documento debe tener entre 6 y 20 dígitos para documentos extranjeros.");
+        }
+    }
+
+    public String generateUsername(String firstName, String lastName, Integer moduleId) {
+        // Get the first letter of the first name and convert it to uppercase
+        String firstInitial = firstName.substring(0, 1).toUpperCase();
+
+        String fullLastName = lastName.toUpperCase();
+
+        return firstInitial + fullLastName + moduleId;
+    }
+
+
 }
