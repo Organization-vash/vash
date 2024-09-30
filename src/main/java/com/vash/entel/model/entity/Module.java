@@ -24,7 +24,4 @@ public class Module {
     @Enumerated(EnumType.STRING)
     private ModuleStatus moduleStatus;
 
-    @ManyToOne
-    @JoinColumn(name = "module_id", nullable = false) //
-    private Module module;
 }

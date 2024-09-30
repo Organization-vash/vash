@@ -46,7 +46,7 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @ManyToOne
-    @JoinColumn(name = "module_id")
+    @OneToOne
+    @JoinColumn(name = "module_id",  nullable = false)
     private Module module;
 }
