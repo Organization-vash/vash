@@ -9,8 +9,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.HashMap;
+import java.util.Map;
 
+import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/customers")
 @RequiredArgsConstructor
@@ -19,36 +23,26 @@ public class CustomerController {
     private final CustomerService customerService;
 
     @PostMapping("/valida")
-    public ResponseEntity<String> validateAndCompleteCustomer(@Valid @RequestBody CustomerDTO customerDTO) {
-        Long docNumber = customerDTO.getDocNumber();
-        int length = String.valueOf(docNumber).length();  // Convertir a String solo para contar los dígitos
+    public ResponseEntity<Map<String, String>> validateCustomer(@Valid @RequestBody CustomerDTO customerDTO) {
+        Map<String, String> response = new HashMap<>();
+        try {
+            // Llamamos al servicio para validar el cliente
+            customerService.validateCustomer(customerDTO);
 
-        // Validar longitud mínima y máxima para todos los documentos
-        if (length < 6 || length > 20) {
-            throw new BadRequestException("Documento inválido. Debe tener entre 6 y 20 dígitos.");
+            // Si no hay excepciones, la validación fue exitosa
+            response.put("message", "Validación exitosa. Cliente encontrado.");
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (BadRequestException e) {
+            response.put("message", e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        } catch (ResourceNotFoundException e) {
+            response.put("message", e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
+    }
 
-        // Validar si el documento tiene exactamente 8 dígitos (DNI)
-        if (length == 8) {
-            // Tratamos este caso como DNI
-            CustomerDTO result = customerService.findByDocNumber(docNumber);
-            if (result == null) {
-                throw new ResourceNotFoundException("DNI no encontrado.");
-            }
-
-            // Convertir el nombre a mayúsculas
-            String uppercasedName = result.getFullname().toUpperCase();
-            return new ResponseEntity<>("Nombre completado para DNI: " + uppercasedName, HttpStatus.OK);
-        }
-
-        // Para otros tipos de documentos (6-20 dígitos)
-        CustomerDTO result = customerService.findByDocNumber(docNumber);
-        if (result == null) {
-            throw new ResourceNotFoundException("Documento no encontrado.");
-        }
-
-        // Convertir el nombre a mayúsculas
-        String uppercasedName = result.getFullname().toUpperCase();
-        return new ResponseEntity<>("Nombre completado: " + uppercasedName, HttpStatus.OK);
+    @GetMapping
+    public ResponseEntity<List<CustomerDTO>> getAllCategories(){
+        return ResponseEntity.ok(customerService.getAll());
     }
 }

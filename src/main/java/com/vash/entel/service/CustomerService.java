@@ -1,8 +1,12 @@
 package com.vash.entel.service;
 
-
 import com.vash.entel.dto.CustomerDTO;
 
+import java.util.List;
+
 public interface CustomerService {
-    CustomerDTO findByDocNumber(Long docNumber);
+
+    void validateCustomer(CustomerDTO customerDTO);
+
+    List<CustomerDTO> getAll();
 }

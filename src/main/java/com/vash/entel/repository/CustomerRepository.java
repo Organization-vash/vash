@@ -9,4 +9,6 @@ import java.util.Optional;
 @Repository
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
     Optional<Customer> findByDocNumber(Long docNumber);
+    boolean existsByDocNumber(Long docNumber);
+    boolean existsByFullname(String fullname);
 }

@@ -15,8 +15,8 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "document", nullable = false)
-    private String document;
+    //@Column(name = "document", nullable = false)
+    //private String document;
 
     @Column(name = "number_doc", nullable = false, unique = true)
     private Integer number_doc;
