@@ -23,7 +23,6 @@ public class Module {
     @Column(name = "module_status", nullable = false)
     private ModuleStatus moduleStatus;
 
-    // Nueva bandera para manejar la confirmación de desactivación
     @Column(name = "confirm_deactivation", nullable = false)
     private boolean confirmDeactivation = false;
 }

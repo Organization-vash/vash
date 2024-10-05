@@ -1,9 +1,11 @@
 package com.vash.entel.model.entity;
 
-
+import com.vash.entel.model.enums.DocumentType;
 import com.vash.entel.model.enums.Role;
 import jakarta.persistence.*;
 import lombok.Data;
+
+import javax.net.ssl.SSLSession;
 import java.time.LocalDateTime;
 
 @Data
@@ -15,21 +17,25 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "document", nullable = false)
-    private String document;
+    @Enumerated(EnumType.STRING)
+    private DocumentType documentType;
 
     @Column(name = "number_doc", nullable = false, unique = true)
-    private Integer number_doc;
+    private Integer numberDoc;
 
     @Column(name = "name", nullable = false)
     private String name;
 
     @Column(name = "last_name", nullable = false)
-    private String last_name;
+    private String lastName;
 
     private String email;
 
     private String password;
+
+    @Column(name = "username")
+    private String username;
+
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
@@ -39,4 +45,8 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @OneToOne
+    @JoinColumn(name = "module_id",  nullable = false)
+    private Module module;
 }

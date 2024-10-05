@@ -25,6 +25,26 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<CustomErrorResponse> handleModelNotFoundException(BadRequestException ex, WebRequest request){
+        CustomErrorResponse err = new CustomErrorResponse(LocalDateTime.now(), ex.getMessage(), request.getDescription(false));
+
+        return new ResponseEntity<>(err, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<CustomErrorResponse> handleAllException(Exception ex, WebRequest request){
+        CustomErrorResponse err = new CustomErrorResponse(LocalDateTime.now(), ex.getMessage(), request.getDescription(false));
+        return new ResponseEntity<>(err, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        String msg = ex.getBindingResult().getFieldErrors().stream()
+                .map(e -> e.getField().concat(":").concat(e.getDefaultMessage())
+                ).collect(Collectors.joining(","));
+
+        CustomErrorResponse err = new CustomErrorResponse(LocalDateTime.now(), msg, request.getDescription(false));
+
     public ResponseEntity<CustomErrorResponse> handleResourceNotFoundException(BadRequestException ex, WebRequest request) {
         CustomErrorResponse err = new CustomErrorResponse(LocalDateTime.now(),
                 ex.getMessage(),
@@ -44,7 +64,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         String msg = ex.getBindingResult().getFieldErrors().stream()
                 .map(e -> e.getField().concat(":").concat(e.getDefaultMessage()))
                 .collect(Collectors.joining(","));
-
 
         CustomErrorResponse err = new CustomErrorResponse(LocalDateTime.now(), msg, request.getDescription(false));
         return new ResponseEntity<>(err, HttpStatus.UNPROCESSABLE_ENTITY);
