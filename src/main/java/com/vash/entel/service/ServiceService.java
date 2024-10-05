@@ -1,13 +1,13 @@
 package com.vash.entel.service;
 
-import com.vash.entel.model.entity.Service;
+import com.vash.entel.dto.ServiceDTO;
 
 import java.util.List;
 
 public interface ServiceService {
-    List<Service> getAll();
-    Service findById(int id);
-    Service Create(Service service);
-    Service Update(Integer id, Service service);
+    List<ServiceDTO> getAll();
+    ServiceDTO findById(int id);
+    ServiceDTO Create(ServiceDTO ServiceDTO);
+    ServiceDTO Update(Integer id, ServiceDTO updateServiceDTO);
     void delete(Integer id);
 }

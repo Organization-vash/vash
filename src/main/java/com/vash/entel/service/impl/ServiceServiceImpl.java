@@ -1,5 +1,9 @@
 package com.vash.entel.service.impl;
 
+import com.vash.entel.dto.ServiceDTO;
+import com.vash.entel.exception.BadRequestException;
+import com.vash.entel.exception.ResourceNotFoundException;
+import com.vash.entel.mapper.ServiceMapper;
 import com.vash.entel.model.entity.Service;
 import com.vash.entel.repository.ServiceRepository;
 import com.vash.entel.service.ServiceService;
@@ -13,41 +17,60 @@ import java.util.List;
 @org.springframework.stereotype.Service
 public class ServiceServiceImpl implements ServiceService {
     private final ServiceRepository serviceRepository;
+    private final ServiceMapper serviceMapper;
 
     @Transactional(readOnly = true)
     @Override
-    public List<Service> getAll() {
-        return serviceRepository.findAll();
+    public List<ServiceDTO> getAll() {
+        List<Service> services = serviceRepository.findAll();
+        return services.stream()
+                .map(serviceMapper::toDTO)
+                .toList();
     }
 
     @Transactional
     @Override
-    public Service findById(int id) {
-        return serviceRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Service not found with id: " + id));
+    public ServiceDTO findById(int id) {
+        Service service = serviceRepository.findById(id)
+                .orElseThrow(()-> new ResourceNotFoundException("El servicio con ID "+id+" no fue encontrado"));
+        return serviceMapper.toDTO(service);
     }
 
     @Transactional
     @Override
-    public Service Create(Service service) {
+    public ServiceDTO Create(ServiceDTO serviceDTO) {
+        serviceRepository.findByNameAndType(serviceDTO.getName(), serviceDTO.getType())
+                        .ifPresent(existingService -> {
+                            throw new BadRequestException("El servicio con el mismo nombre y tipo ya existe");
+                        });
+        Service service = serviceMapper.toEntity(serviceDTO);
         service.setCreatedAt(LocalDateTime.now());
-        return serviceRepository.save(service);
+        service = serviceRepository.save(service);
+        return serviceMapper.toDTO(service);
     }
 
     @Transactional
     @Override
-    public Service Update(Integer id, Service service) {
-        Service serviceFromDb = findById(id);
-        serviceFromDb.setName(service.getName());
-        serviceFromDb.setDescription(service.getDescription());
+    public ServiceDTO Update(Integer id, ServiceDTO updateServiceDTO) {
+        Service serviceFromDb = serviceRepository.findById(id)
+                        .orElseThrow(()-> new ResourceNotFoundException("El servicio con ID "+id+" no fue encontrado"));
+        serviceRepository.findByNameAndType(updateServiceDTO.getName(), updateServiceDTO.getType())
+                        .filter(existingService -> !existingService.getId().equals(id))
+                                .ifPresent(existingService -> {
+                                    throw new BadRequestException("El servicio con el mismo nombre y tipo ya existe");
+                                });
+        serviceFromDb.setName(updateServiceDTO.getName());
+        serviceFromDb.setDescription(updateServiceDTO.getDescription());
         serviceFromDb.setUpdatedAt(LocalDateTime.now());
-        return serviceRepository.save(serviceFromDb);
+        serviceFromDb = serviceRepository.save(serviceFromDb);
+        return serviceMapper.toDTO(serviceFromDb);
     }
 
     @Transactional
     @Override
     public void delete(Integer id) {
-        Service service = findById(id);
+        Service service = serviceRepository.findById(id)
+                        .orElseThrow(()->new ResourceNotFoundException("El servicio con ID "+id+" no fue encontrado"));
         serviceRepository.delete(service);
     }
 }
