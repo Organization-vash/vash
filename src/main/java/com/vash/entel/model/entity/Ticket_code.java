@@ -2,6 +2,7 @@ package com.vash.entel.model.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+
 import java.time.LocalDateTime;
 
 @Data
