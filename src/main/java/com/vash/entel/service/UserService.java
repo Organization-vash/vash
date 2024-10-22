@@ -13,4 +13,6 @@ public interface UserService {
     void delete(Integer id);
     void validateDocument(UserDTO userDTO);
     String generateUsername(String firstName, String lastName, Integer moduleId);
+
+    List<UserDTO> findByNumberDocOrName(Integer numberDoc, String name);
 }

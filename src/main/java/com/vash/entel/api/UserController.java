@@ -46,4 +46,15 @@ public class UserController {
         userService.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<UserDTO>> findByNumberDocOrName(
+            @RequestParam(value = "numberDoc", required = false) Integer numberDoc,
+            @RequestParam(value = "name", required = false) String name) {
+        List<UserDTO> users = userService.findByNumberDocOrName(numberDoc, name);
+        if (users.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(users);
+    }
 }
