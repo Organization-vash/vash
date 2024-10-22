@@ -28,6 +28,12 @@ public class ServiceController {
         return new ResponseEntity<ServiceDTO>(serviceDTO, HttpStatus.OK);
     }
 
+    @GetMapping("/name/{name}")
+    public ResponseEntity<ServiceDTO> getServiceByName(@PathVariable("name") String name) {
+        ServiceDTO serviceDTO = serviceService.findByName(name);
+        return new ResponseEntity<>(serviceDTO, HttpStatus.OK);
+    }
+
     @PostMapping
     public ResponseEntity<ServiceDTO> createService(@Valid @RequestBody ServiceDTO serviceDTO){
         ServiceDTO newService = serviceService.Create(serviceDTO);

@@ -16,6 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @org.springframework.stereotype.Service
 public class ServiceServiceImpl implements ServiceService {
+
     private final ServiceRepository serviceRepository;
     private final ServiceMapper serviceMapper;
 
@@ -33,6 +34,14 @@ public class ServiceServiceImpl implements ServiceService {
     public ServiceDTO findById(int id) {
         Service service = serviceRepository.findById(id)
                 .orElseThrow(()-> new ResourceNotFoundException("El servicio con ID "+id+" no fue encontrado"));
+        return serviceMapper.toDTO(service);
+    }
+
+    @Transactional
+    @Override
+    public ServiceDTO findByName(String name) {
+        Service service = serviceRepository.findByName(name)
+                .orElseThrow(()-> new ResourceNotFoundException("No se encontro coincidencia"));
         return serviceMapper.toDTO(service);
     }
 
