@@ -135,5 +135,12 @@ public class UserServiceImpl implements UserService {
         return firstInitial + fullLastName + moduleId;
     }
 
-
+    @Transactional
+    @Override
+    public List<UserDTO> findByNumberDocOrName(Integer numberDoc, String name) {
+        List<User> users = userRepository.findByNumberDocOrName(numberDoc, name);
+        return users.stream()
+                .map(userMapper::toUserDTO)
+                .toList();
+    }
 }
