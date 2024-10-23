@@ -27,7 +27,7 @@ public class TicketCodeController {
 
     @PostMapping
     private ResponseEntity<Map<String, Object>> generateTicketCode(
-            @RequestParam String document,
+            @RequestParam Long document,
             @RequestParam String fullname,
             @RequestParam Integer serviceId,
             @RequestParam Integer agencyId){
