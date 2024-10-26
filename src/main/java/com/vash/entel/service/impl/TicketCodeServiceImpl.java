@@ -3,7 +3,6 @@ package com.vash.entel.service.impl;
 import com.vash.entel.model.entity.Agency;
 import com.vash.entel.model.entity.Customer;
 import com.vash.entel.model.entity.Ticket_code;
-import com.vash.entel.model.entity.WaitingQueue;
 import com.vash.entel.repository.CustomerRepository;
 import com.vash.entel.repository.TicketCodeRepository;
 import com.vash.entel.service.TicketCodeService;
@@ -49,7 +48,7 @@ public class TicketCodeServiceImpl implements TicketCodeService {
 
         ticketCodeRepository.save(ticketCode);
 
-        addToWaitingQueue(ticketCode);
+        waitingQueueService.addTicketToQueue(ticketCode);
 
         return newCode;
     }
@@ -67,13 +66,5 @@ public class TicketCodeServiceImpl implements TicketCodeService {
 
     private int extractNumber(String code) {
         return Integer.parseInt(code.substring(1)); 
-    }
-
-    private void addToWaitingQueue(Ticket_code ticketCode) {
-        WaitingQueue waitingQueue = new WaitingQueue();
-        waitingQueue.setTicketCode(ticketCode);
-        waitingQueue.setCreatedAt(ticketCode.getCreated());
-
-        waitingQueueService.addTicketToQueue(waitingQueue);
     }
 }

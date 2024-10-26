@@ -5,7 +5,6 @@ import com.vash.entel.model.enums.SuccessStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 
 @Data
 @Entity

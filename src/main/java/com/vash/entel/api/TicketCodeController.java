@@ -23,7 +23,7 @@ public class TicketCodeController {
     private final TicketCodeService ticketCodeService;
     private final ServiceServiceImpl serviceService;
     private final AgencyServiceImpl agencyRepository;
-    private final ServiceMapper serviceMapper; // Se añade el mapper para la conversión
+    private final ServiceMapper serviceMapper;
 
     @PostMapping
     private ResponseEntity<Map<String, Object>> generateTicketCode(

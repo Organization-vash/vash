@@ -1,11 +1,13 @@
 package com.vash.entel.service;
 
+import com.vash.entel.model.entity.Ticket_code;
 import com.vash.entel.model.entity.WaitingQueue;
-import com.vash.entel.repository.WaitingQueueRepository;
+import com.vash.entel.model.enums.AttentionStatus;
 
-import java.util.List;
+import java.util.Optional;
 
 public interface WaitingQueueService {
-    List<WaitingQueue> getAllTicketsInQueue();
-    WaitingQueue addTicketToQueue(WaitingQueue waitingQueue);
+    Optional<WaitingQueue> getNextPendingTicket();
+    void updateWaitingQueueStatus(WaitingQueue waitingQueue, AttentionStatus status);
+    void addTicketToQueue(Ticket_code ticketCode);
 }
