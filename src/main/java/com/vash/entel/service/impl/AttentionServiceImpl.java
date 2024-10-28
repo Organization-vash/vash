@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -59,10 +60,10 @@ public class AttentionServiceImpl implements AttentionService {
     }
 
     @Override
-    public ResponseEntity<String> acceptTicket() {
+    public ResponseEntity<Map<String, String>> acceptTicket() {
 
         if (lastQueriedTicketCodeId == null) {
-            return ResponseEntity.badRequest().body("No se ha solicitado el próximo ticket en cola.");
+            return ResponseEntity.ok(Map.of("message", "No se solicitó próximo ticket en cola"));
         }
 
         Ticket_code ticketCode = ticketCodeRepository.findById(lastQueriedTicketCodeId)
@@ -84,13 +85,13 @@ public class AttentionServiceImpl implements AttentionService {
         updateWaitingQueueStatus(waitingQueue, AttentionStatus.ATTENDING);
         lastQueriedTicketCodeId = null;
 
-        return ResponseEntity.ok("Ticket accepted");
+        return ResponseEntity.ok(Map.of("message", "Ticket accepted"));
     }
 
     @Override
-    public ResponseEntity<String> rejectTicket() {
+    public ResponseEntity<Map<String, String>> rejectTicket() {
         if (lastQueriedTicketCodeId == null){
-            return ResponseEntity.badRequest().body("No se ha solicitado el próximo ticket en cola.");
+            return ResponseEntity.ok(Map.of("message", "No se solicitó próximo ticket en cola"));
         }
         Ticket_code ticketCode = ticketCodeRepository.findById(lastQueriedTicketCodeId)
                 .orElseThrow(() -> new RuntimeException("Ticket code not found"));
@@ -102,7 +103,7 @@ public class AttentionServiceImpl implements AttentionService {
 
         lastQueriedTicketCodeId = null;
 
-        return ResponseEntity.ok("Ticket rejected");
+        return ResponseEntity.ok(Map.of("message", "Ticket rejected"));
     }
 
 

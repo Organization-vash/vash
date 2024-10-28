@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/attention")
 @RequiredArgsConstructor
@@ -19,12 +21,12 @@ public class AttentionController {
     }
 
     @PostMapping("/accept")
-    public ResponseEntity<String> acceptTicket(){
+    public ResponseEntity<Map<String, String>> acceptTicket(){
         return attentionService.acceptTicket();
     }
 
     @PostMapping("/reject")
-    public ResponseEntity<String> rejectTicket() {
+    public ResponseEntity<Map<String, String>> rejectTicket() {
         return attentionService.rejectTicket();
     }
 }
