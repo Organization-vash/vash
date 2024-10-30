@@ -3,6 +3,7 @@ package com.vash.entel.model.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Entity
@@ -27,4 +28,8 @@ public class Service {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @ManyToOne
+    @JoinColumn(name="attention_id", referencedColumnName = "id", foreignKey = @ForeignKey(name= "fk_service_attentions") )
+    private Attention attention;
 }
