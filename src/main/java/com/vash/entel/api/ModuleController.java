@@ -1,12 +1,17 @@
 package com.vash.entel.api;
 
+import com.vash.entel.dto.ModuleDTO;
+import com.vash.entel.mapper.ModuleMapper;
 import com.vash.entel.model.entity.Module;
 import com.vash.entel.model.enums.ModuleStatus;
 import com.vash.entel.service.ModuleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/modules")
@@ -15,63 +20,90 @@ public class ModuleController {
     @Autowired
     private ModuleService moduleService;
 
+    @Autowired
+    private ModuleMapper moduleMapper;
+
     // Endpoint para verificar si el módulo puede aceptar tickets (cuando está en estado ACTIVE)
-    @GetMapping("/{moduleId}/accept-ticket")
-    public String acceptTicket(@PathVariable Integer moduleId) {
+    @GetMapping("/accept-ticket/{moduleId}")
+    public ResponseEntity<Map<String, Object>> acceptTicket(@PathVariable Integer moduleId) {
         Module module = moduleService.findById(moduleId);
+        Map<String, Object> response = new HashMap<>();
+        response.put("moduleId", moduleId);
+        response.put("status", module.getModuleStatus().name());
 
         if (module.getModuleStatus() == ModuleStatus.INACTIVE) {
-            return "El módulo está inactivo y no puede aceptar tickets.";
+            response.put("message", "El módulo está inactivo y no puede aceptar tickets.");
+        } else if (moduleService.canAcceptTicket(module)) {
+            response.put("message", "El módulo puede aceptar tickets.");
+        } else if (module.getModuleStatus() == ModuleStatus.RECESS) {
+            response.put("message", "El módulo está en receso y no puede aceptar tickets en este momento.");
+        } else {
+            response.put("message", "El módulo se ha desactivado automáticamente.");
         }
 
-        if (moduleService.canAcceptTicket(module)) {
-            return "El módulo puede aceptar tickets.";
-        } else if (module.getModuleStatus() == ModuleStatus.RECESS) {
-            return "El módulo está en receso y no puede aceptar tickets en este momento.";
-        } else {
-            return "El módulo se ha desactivado automáticamente.";
-        }
+        return ResponseEntity.ok(response);
     }
 
-    // Endpoint para cambiar el estado del módulo
-    @PutMapping("/{moduleId}/change-status")
-    public String changeModuleStatus(@PathVariable Integer moduleId, @RequestParam ModuleStatus newStatus) {
-        Module module = moduleService.findById(moduleId);
+    // Endpoint para cambiar el estado del módulo usando un body JSON
+    @PutMapping("/change-status")
+    public ResponseEntity<Map<String, Object>> changeModuleStatus(@RequestBody ModuleDTO moduleDTO) {
+        Module module = moduleService.findById(moduleDTO.getId());
+        Map<String, Object> response = new HashMap<>();
+        response.put("moduleId", moduleDTO.getId());
 
-        if (newStatus == ModuleStatus.RECESS) {
+        if (module == null) {
+            response.put("message", "El módulo no existe.");
+            return ResponseEntity.badRequest().body(response);
+        }
+
+        if (moduleDTO.getModuleStatus() == ModuleStatus.RECESS) {
             if (!moduleService.canActivateRecess()) {
-                return "No puedes activar el estado de RECESS fuera del rango permitido (12:00 a 15:00).";
+                response.put("message", "No puedes activar el estado de RECESS fuera del rango permitido (12:00 a 15:00).");
+                return ResponseEntity.badRequest().body(response);
             }
             moduleService.activateRecess(module);
-            return "El módulo ha sido cambiado a RECESS por una hora y media.";
-        } else if (newStatus == ModuleStatus.INACTIVE) {
-            // Manejo de la doble confirmación
-            return moduleService.deactivateModule(module);
+            response.put("message", "El módulo ha sido cambiado a RECESS por una hora y media.");
+        } else if (moduleDTO.getModuleStatus() == ModuleStatus.INACTIVE) {
+            response.put("message", moduleService.deactivateModule(module));
         } else {
-            module.setModuleStatus(newStatus);
+            module.setModuleStatus(moduleDTO.getModuleStatus());
             moduleService.save(module);
-            return "El estado del módulo ha sido cambiado a " + newStatus.name();
+            response.put("message", "El estado del módulo ha sido cambiado a " + moduleDTO.getModuleStatus().name());
         }
+        response.put("status", module.getModuleStatus().name());
+
+        return ResponseEntity.ok(response);
     }
 
     // Endpoint para crear un nuevo módulo
     @PostMapping("/create")
-    public String createModule(@RequestBody Module module) {
-        // Inicializar el campo createdAt si no se ha inicializado
+    public ResponseEntity<Map<String, Object>> createModule(@RequestBody ModuleDTO moduleDTO) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("moduleId", moduleDTO.getId());
+
+        if (moduleService.existsById(moduleDTO.getId())) {
+            response.put("message", "El ID del módulo ya existe. Por favor, elige otro ID.");
+            return ResponseEntity.badRequest().body(response);
+        }
+
+        Module module = moduleMapper.toEntity(moduleDTO);
+
         if (module.getCreatedAt() == null) {
             module.setCreatedAt(LocalDateTime.now());
         }
-        // Inicializar el campo updatedAt con la fecha y hora actuales
         module.setUpdatedAt(LocalDateTime.now());
-        // El estado inicial siempre será INACTIVE
         module.setModuleStatus(ModuleStatus.INACTIVE);
         moduleService.save(module);
-        return "Módulo creado con éxito con estado: " + module.getModuleStatus();
+
+        response.put("message", "Módulo creado con éxito con estado: " + module.getModuleStatus().name());
+        response.put("status", module.getModuleStatus().name());
+
+        return ResponseEntity.ok(response);
     }
 
     // Obtener todos los módulos
     @GetMapping("/all")
-    public Iterable<Module> getAllModules() {
-        return moduleService.getAll();
+    public ResponseEntity<Iterable<Module>> getAllModules() {
+        return ResponseEntity.ok(moduleService.getAll());
     }
 }

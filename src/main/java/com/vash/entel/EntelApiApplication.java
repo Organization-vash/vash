@@ -9,5 +9,4 @@ public class EntelApiApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(EntelApiApplication.class, args);
 	}
-
 }
