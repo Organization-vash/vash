@@ -52,6 +52,8 @@ public class AttentionServiceImpl implements AttentionService {
                     ticketCode.getCustomer().getDocNumber(),
                     ticketCode.getCustomer().getFullname()
             );
+
+            updateWaitingQueueStatus(waitingQueue, AttentionStatus.ATTENDING);
             return Optional.of(responseDTO);
         }
         else {
