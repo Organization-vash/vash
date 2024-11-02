@@ -1,4 +1,5 @@
 package com.vash.entel.service.impl;
+
 import com.vash.entel.model.entity.Attention;
 import com.vash.entel.repository.AddRemoveServiceRepository;
 import com.vash.entel.repository.AttentionRepository;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
 @RequiredArgsConstructor
 @Service
 public class AddRemoveServiceServiceImpl implements AddRemoveServiceService {
@@ -19,36 +21,39 @@ public class AddRemoveServiceServiceImpl implements AddRemoveServiceService {
 
     @Transactional
     @Override
-    public List<com.vash.entel.model.entity.Service> getServices(Integer attention) {
-        Attention attentiond =addRemoveServiceRepository.findById(attention)
+    public List<com.vash.entel.model.entity.Service> getServices(Integer attentionId) {
+        Attention attention = addRemoveServiceRepository.findById(attentionId)
                 .orElseThrow(() -> new RuntimeException("Attention Not Found"));
-        return attentiond.getServices();
+        return attention.getServices();
     }
-
 
     @Transactional
     @Override
-    public com.vash.entel.model.entity.Service addService(Integer attention, Integer serviceId) {
-        Attention attentiond =addRemoveServiceRepository.findById(attention)
+    public com.vash.entel.model.entity.Service addService(Integer attentionId, Integer serviceId) {
+        Attention attention = addRemoveServiceRepository.findById(attentionId)
                 .orElseThrow(() -> new RuntimeException("Attention Not Found"));
-        com.vash.entel.model.entity.Service serviced = serviceRepository.findById(serviceId)
-                .orElseThrow(()-> new RuntimeException("Service Not Found"));
-        serviced.setAttention(attentiond);
-        serviced.setUpdatedAt(LocalDateTime.now());
-        return serviceRepository.save(serviced);
+        com.vash.entel.model.entity.Service service = serviceRepository.findById(serviceId)
+                .orElseThrow(() -> new RuntimeException("Service Not Found"));
+        
+        service.setAttention(attention);
+        service.setUpdatedAt(LocalDateTime.now());
+        return serviceRepository.save(service);
     }
-
 
     @Transactional
     @Override
-    public void removeService(Integer attention, Integer serviceId) {
-        addRemoveServiceRepository.findById(attention)
+    public void removeService(Integer attentionId, Integer serviceId) {
+        Attention attention = addRemoveServiceRepository.findById(attentionId)
                 .orElseThrow(() -> new RuntimeException("Attention Not Found"));
-        com.vash.entel.model.entity.Service serviced = serviceRepository.findById(serviceId)
-                .orElseThrow(()-> new RuntimeException("Service Not Found"));
-        serviced.setAttention(null);
-        serviceRepository.save(serviced);
+        com.vash.entel.model.entity.Service service = serviceRepository.findById(serviceId)
+                .orElseThrow(() -> new RuntimeException("Service Not Found"));
 
+        // Verificar que la atención tenga más de un servicio antes de eliminar
+        if (attention.getServices().size() <= 1) {
+            throw new RuntimeException("Cannot remove the last service. An attention must have at least one service.");
+        }
+
+        service.setAttention(null);
+        serviceRepository.save(service);
     }
-
 }

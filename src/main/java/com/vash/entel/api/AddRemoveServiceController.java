@@ -1,36 +1,40 @@
 package com.vash.entel.api;
 
-
+import com.vash.entel.model.entity.Service;
 import com.vash.entel.service.AddRemoveServiceService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/addRemoveService")
 public class AddRemoveServiceController {
+
     private final AddRemoveServiceService addRemoveServiceService;
 
-    @GetMapping("/{attentionId}/service")
-    public ResponseEntity<List<service>> getPublicationByPlaylist(@PathVariable Integer attentionId) {
-        List<service> publication = attentionService.getPublicationByPlaylistId(attentionId);
-        return ResponseEntity.ok(service);
+    // Obtener todos los servicios asociados a una atención
+    @GetMapping("/{attentionId}/services")
+    public ResponseEntity<List<Service>> getServicesByAttention(@PathVariable Integer attentionId) {
+        List<Service> services = addRemoveServiceService.getServices(attentionId);
+        return ResponseEntity.ok(services);
     }
 
-    @PostMapping("/add/service")
-    public ResponseEntity<service> addPublicationToPlaylist(@RequestParam Integer playlistId, @RequestParam Integer publicationId) {
-        Service updatedservice = addRemoveServiceService.addService(attentionId, serviceId);
-        return ResponseEntity.ok(updatedpublication);
+    // Agregar un servicio a una atención
+    @PostMapping("/{attentionId}/addService")
+    public ResponseEntity<Service> addServiceToAttention(@PathVariable Integer attentionId, @RequestParam Integer serviceId) {
+        Service updatedService = addRemoveServiceService.addService(attentionId, serviceId);
+        return ResponseEntity.ok(updatedService);
     }
 
+    // Eliminar un servicio de una atención
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping("/{playlistId}/publications/{publicationsId}")
-    public ResponseEntity<Void> removePublicationFromPlaylist(@PathVariable Integer playlistId, @PathVariable Integer publicationId) {
-        playlistService.removePublicationFromPlaylist(playlistId, publicationId);
+    @DeleteMapping("/{attentionId}/removeService/{serviceId}")
+    public ResponseEntity<Void> removeServiceFromAttention(@PathVariable Integer attentionId, @PathVariable Integer serviceId) {
+        addRemoveServiceService.removeService(attentionId, serviceId);
         return ResponseEntity.noContent().build();
     }
 }
