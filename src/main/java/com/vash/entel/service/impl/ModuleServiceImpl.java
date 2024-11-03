@@ -6,7 +6,7 @@ import com.vash.entel.repository.ModuleRepository;
 import com.vash.entel.service.ModuleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -33,6 +33,12 @@ public class ModuleServiceImpl implements ModuleService {
 
     @Override
     public void save(Module module) {
+        if (module.getId() == null) {
+            // Solo verificamos si el ID existe cuando se está creando un nuevo módulo.
+            if (moduleRepository.existsById(module.getId())) {
+                throw new RuntimeException("El ID del módulo ya existe. Por favor, elige otro ID.");
+            }
+        }
         moduleRepository.save(module);
     }
 
@@ -44,7 +50,7 @@ public class ModuleServiceImpl implements ModuleService {
     @Override
     public boolean canActivateRecess() {
         LocalTime now = LocalTime.now();
-        return now.isAfter(LocalTime.of(12, 0)) && now.isBefore(LocalTime.of(15, 0));
+        return now.isAfter(LocalTime.of(12, 0)) && now.isBefore(LocalTime.of(19, 0));
     }
 
     @Override
@@ -62,23 +68,21 @@ public class ModuleServiceImpl implements ModuleService {
                 save(module);
                 System.out.println("El módulo ha regresado al estado ACTIVE");
             }
-        }, 90*60 * 1000);  // 1hr y media
+        }, 1*60 * 1000);  // 1hr y media
     }
 
     @Override
     public String deactivateModule(Module module) {
-        if (!module.isConfirmDeactivation()) {
-            // Primera solicitud: solicitar confirmación
-            module.setConfirmDeactivation(true);  // Cambiar la bandera
-            save(module);  // Guardar el cambio en la base de datos
-            return "¿Seguro que quiere desactivar?";
-        } else {
-            // Segunda solicitud: desactivar el módulo
             module.setModuleStatus(ModuleStatus.INACTIVE);
             module.setUpdatedAt(LocalDateTime.now());
-            module.setConfirmDeactivation(false);  // Reiniciar la bandera de confirmación
             save(module);
             return "Módulo desactivado.";
-        }
+        
+
     }
+    @Override
+    public boolean existsById(Integer id) {
+        return moduleRepository.existsById(id);
+    }
+
 }

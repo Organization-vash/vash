@@ -13,4 +13,5 @@ public interface ModuleService {
     void activateRecess(Module module);      // Activar el estado RECESS y limitar a 1.5 horas
     boolean canActivateRecess();             // Verificar si se puede activar el estado RECESS
     String deactivateModule(Module module);  // Desactivar el módulo con doble confirmación
+    boolean existsById(Integer id);
 }

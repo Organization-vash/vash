@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Table(name = "modules")
 public class Module {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false, unique = true)
     private Integer id;
 
     @Column(name = "created_at", nullable = false)
@@ -22,7 +22,5 @@ public class Module {
     @Enumerated(EnumType.STRING)
     @Column(name = "module_status", nullable = false)
     private ModuleStatus moduleStatus;
-
-    @Column(name = "confirm_deactivation", nullable = false)
-    private boolean confirmDeactivation = false;
+ 
 }
