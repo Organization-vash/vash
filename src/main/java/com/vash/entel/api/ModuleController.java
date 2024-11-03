@@ -6,6 +6,9 @@ import com.vash.entel.model.entity.Module;
 import com.vash.entel.model.enums.ModuleStatus;
 import com.vash.entel.service.ModuleService;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.http.HttpStatus;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -105,5 +108,11 @@ public class ModuleController {
     @GetMapping("/all")
     public ResponseEntity<Iterable<Module>> getAllModules() {
         return ResponseEntity.ok(moduleService.getAll());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Module> findById(@PathVariable("id") Integer id){
+        Module module = moduleService.findById(id);
+        return new ResponseEntity<Module>(module, HttpStatus.OK);
     }
 }
