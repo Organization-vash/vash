@@ -7,7 +7,5 @@ import java.util.Map;
 import java.util.Optional;
 
 public interface AttentionService {
-    Optional<NextPendingTicketResponseDTO> getNextPendingTicket(Integer moduleId);
-    ResponseEntity<Map<String, String>> acceptTicket();
-    ResponseEntity<Map<String, String>> rejectTicket();
+
 }

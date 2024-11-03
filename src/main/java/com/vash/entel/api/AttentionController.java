@@ -1,6 +1,7 @@
 package com.vash.entel.api;
 
 import com.vash.entel.service.impl.AttentionServiceImpl;
+import com.vash.entel.service.impl.WaitingQueueServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,7 +12,7 @@ import java.util.Map;
 @RequestMapping("/attention")
 @RequiredArgsConstructor
 public class AttentionController {
-    private final AttentionServiceImpl attentionService;
+    private final WaitingQueueServiceImpl attentionService;
 
     @GetMapping("/next")
     public ResponseEntity<?> getNextPendingTicket(@RequestParam("moduleId") Integer moduleId){
