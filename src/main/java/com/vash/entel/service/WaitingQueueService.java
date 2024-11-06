@@ -14,4 +14,5 @@ public interface WaitingQueueService {
     ResponseEntity<Map<String, String>> acceptTicket();
     ResponseEntity<Map<String, String>> rejectTicket();
     void addTicketToQueue(Ticket_code ticketCode);
+    Optional<Integer> getLastAcceptedTicketId();
 }
