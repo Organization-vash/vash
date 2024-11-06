@@ -10,4 +10,5 @@ public class NextPendingTicketResponseDTO {
     private String serviceName;
     private Long customerDocNumber;
     private String customerFullName;
+    private Integer ticketCodeId;
 }
