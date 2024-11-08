@@ -5,6 +5,9 @@ import lombok.Data;
 
 @Data
 public class ModuleDTO {
-    private Integer id;               // ID del módulo
-    private ModuleStatus moduleStatus; // Nuevo estado
+    private Integer id;
+    private ModuleStatus moduleStatus;
+    private Integer userId;   // Agregar campo para UserID
+    private String userName;  // Agregar campo para el nombre del usuario
 }
+

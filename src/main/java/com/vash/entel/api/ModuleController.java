@@ -49,34 +49,37 @@ public class ModuleController {
 
     // Endpoint para cambiar el estado del módulo usando un body JSON
     @PutMapping("/change-status")
-    public ResponseEntity<Map<String, Object>> changeModuleStatus(@RequestBody ModuleDTO moduleDTO) {
-        Module module = moduleService.findById(moduleDTO.getId());
-        Map<String, Object> response = new HashMap<>();
-        response.put("moduleId", moduleDTO.getId());
+public ResponseEntity<Map<String, Object>> changeModuleStatus(@RequestBody ModuleDTO moduleDTO) {
+    Module module = moduleService.findById(moduleDTO.getId());
+    Map<String, Object> response = new HashMap<>();
+    response.put("moduleId", moduleDTO.getId());
+    response.put("userId", moduleDTO.getUserId());    // Incluir UserID en la respuesta
+    response.put("userName", moduleDTO.getUserName()); // Incluir nombre del usuario en la respuesta
 
-        if (module == null) {
-            response.put("message", "El módulo no existe.");
+    if (module == null) {
+        response.put("message", "El módulo no existe.");
+        return ResponseEntity.badRequest().body(response);
+    }
+
+    if (moduleDTO.getModuleStatus() == ModuleStatus.RECESS) {
+        if (!moduleService.canActivateRecess()) {
+            response.put("message", "No puedes activar el estado de RECESS fuera del rango permitido (12:00 a 15:00).");
             return ResponseEntity.badRequest().body(response);
         }
-
-        if (moduleDTO.getModuleStatus() == ModuleStatus.RECESS) {
-            if (!moduleService.canActivateRecess()) {
-                response.put("message", "No puedes activar el estado de RECESS fuera del rango permitido (12:00 a 15:00).");
-                return ResponseEntity.badRequest().body(response);
-            }
-            moduleService.activateRecess(module);
-            response.put("message", "El módulo ha sido cambiado a RECESS por una hora y media.");
-        } else if (moduleDTO.getModuleStatus() == ModuleStatus.INACTIVE) {
-            response.put("message", moduleService.deactivateModule(module));
-        } else {
-            module.setModuleStatus(moduleDTO.getModuleStatus());
-            moduleService.save(module);
-            response.put("message", "El estado del módulo ha sido cambiado a " + moduleDTO.getModuleStatus().name());
-        }
-        response.put("status", module.getModuleStatus().name());
-
-        return ResponseEntity.ok(response);
+        moduleService.activateRecess(module);
+        response.put("message", "El módulo ha sido cambiado a RECESS por una hora y media.");
+    } else if (moduleDTO.getModuleStatus() == ModuleStatus.INACTIVE) {
+        response.put("message", moduleService.deactivateModule(module));
+    } else {
+        module.setModuleStatus(moduleDTO.getModuleStatus());
+        moduleService.save(module);
+        response.put("message", "El estado del módulo ha sido cambiado a " + moduleDTO.getModuleStatus().name());
     }
+    response.put("status", module.getModuleStatus().name());
+
+    return ResponseEntity.ok(response);
+}
+
 
     // Endpoint para crear un nuevo módulo
     @PostMapping("/create")
