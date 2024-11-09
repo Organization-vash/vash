@@ -26,9 +26,9 @@ public class AttentionController {
     }
 
     @PostMapping("/accept")
-    public ResponseEntity<Map<String, String>> acceptTicket(){
+    public ResponseEntity<Map<String, String>> acceptTicket(@RequestParam Integer moduleId){
         waitingQueueService.storeLastAcceptedTicketId();
-        return attentionService.acceptTicket();
+        return attentionService.acceptTicket(moduleId);
     }
 
     @PostMapping("/reject")
