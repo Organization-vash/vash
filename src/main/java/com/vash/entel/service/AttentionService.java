@@ -11,3 +11,5 @@ public interface AttentionService {
     Optional<Attention> getLastAcceptedAttention();
     ResponseEntity<Map<String, String>> updateAttentionStatus(AttentionStatus status);
 }
+
+}

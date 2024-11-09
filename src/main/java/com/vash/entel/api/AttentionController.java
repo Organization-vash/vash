@@ -2,6 +2,7 @@ package com.vash.entel.api;
 
 import com.vash.entel.model.enums.AttentionStatus;
 import com.vash.entel.service.AttentionService;
+import com.vash.entel.model.enums.SuccessStatus;
 import com.vash.entel.service.impl.AttentionServiceImpl;
 import com.vash.entel.service.impl.WaitingQueueServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +17,6 @@ import java.util.Map;
 public class AttentionController {
     private final WaitingQueueServiceImpl attentionService;
     private final WaitingQueueServiceImpl waitingQueueService;
-    //private final AttentionService attentionService;
 
     @GetMapping("/next")
     public ResponseEntity<?> getNextPendingTicket(@RequestParam("moduleId") Integer moduleId){
@@ -51,5 +51,13 @@ public class AttentionController {
     @PostMapping("/markAsNotAttend")
     public ResponseEntity<Map<String, String>> markAsNotAttend() {
         return attentionService.updateAttentionStatus(AttentionStatus.NOT_ATTENDING);
+    @PostMapping("/markAsSuccessful")
+    public ResponseEntity<Map<String, String>> markAsSuccessful() {
+        return attentionService.updateAttentionStatus(SuccessStatus.SUCCESSFUL);
+    }
+
+    @PostMapping("/markAsNotSuccessful")
+    public ResponseEntity<Map<String, String>> markAsNotSuccessful() {
+        return attentionService.updateAttentionStatus(SuccessStatus.NOT_SUCCESSFUl);
     }
 }

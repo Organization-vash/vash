@@ -7,6 +7,7 @@ import com.vash.entel.model.entity.Ticket_code;
 import com.vash.entel.model.entity.WaitingQueue;
 import com.vash.entel.model.enums.AttentionStatus;
 import com.vash.entel.model.enums.ModuleStatus;
+import com.vash.entel.model.enums.SuccessStatus;
 import com.vash.entel.repository.AttentionRepository;
 import com.vash.entel.repository.ModuleRepository;
 import com.vash.entel.repository.TicketCodeRepository;
@@ -162,6 +163,10 @@ public class WaitingQueueServiceImpl implements WaitingQueueService {
         waitingQueueRepository.save(waitingQueue);
 
         String message = (status == AttentionStatus.ATTEND) ? "Attention marked as ATTEND" : "Attention marked as NOT_ATTENDING";
+        attention.setSuccessStatus(status);
+        attentionRepository.save(attention);
+
+        String message = (status == SuccessStatus.SUCCESSFUL) ? "Attention marked as SUCCESSFUL" : "Attention marked as NOT_SUCCESSFUl";
         return ResponseEntity.ok(Map.of("message", message));
     }
 }
