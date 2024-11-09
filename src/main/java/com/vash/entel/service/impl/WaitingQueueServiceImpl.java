@@ -140,7 +140,7 @@ public class WaitingQueueServiceImpl implements WaitingQueueService {
     }
 
     // Actualizar el estado de atención a ATTEND o NOT_ATTENDING
-    public ResponseEntity<Map<String, String>> updateAttentionStatus(SuccessStatus status) {
+    public ResponseEntity<Map<String, String>> updateAttentionStatus(AttentionStatus status) {
         Optional<Integer> lastAcceptedTicketId = getLastAcceptedTicketId();
 
         if (lastAcceptedTicketId.isEmpty()) {
@@ -154,6 +154,15 @@ public class WaitingQueueServiceImpl implements WaitingQueueService {
         Ticket_code ticketCode = (Ticket_code) ticketCodeRepository.findById(lastAcceptedTicketId)
                 .orElseThrow(() -> new RuntimeException("Ticket code not found"));
 
+        attention.setAttentionStatus(status);
+        attentionRepository.save(attention);
+        WaitingQueue waitingQueue = waitingQueueRepository.findByTicketCode(ticketCode)
+                .orElseThrow(() -> new RuntimeException("No se encontró la cola de espera para el ticket aceptado"));
+
+        waitingQueue.setAttentionStatus(status);
+        waitingQueueRepository.save(waitingQueue);
+
+        String message = (status == AttentionStatus.ATTEND) ? "Attention marked as ATTEND" : "Attention marked as NOT_ATTENDING";
         attention.setSuccessStatus(status);
         attentionRepository.save(attention);
 

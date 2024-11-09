@@ -1,6 +1,7 @@
 package com.vash.entel.api;
 
 import com.vash.entel.model.enums.AttentionStatus;
+import com.vash.entel.service.AttentionService;
 import com.vash.entel.model.enums.SuccessStatus;
 import com.vash.entel.service.impl.AttentionServiceImpl;
 import com.vash.entel.service.impl.WaitingQueueServiceImpl;
@@ -26,6 +27,7 @@ public class AttentionController {
 
     @PostMapping("/accept")
     public ResponseEntity<Map<String, String>> acceptTicket(){
+        waitingQueueService.storeLastAcceptedTicketId();
         return attentionService.acceptTicket();
     }
 
@@ -41,6 +43,14 @@ public class AttentionController {
                 .orElse(ResponseEntity.noContent().build());
     }
 
+    @PostMapping("/markAsAttend")
+    public ResponseEntity<Map<String, String>> markAsAttend() {
+        return attentionService.updateAttentionStatus(AttentionStatus.ATTEND);
+    }
+
+    @PostMapping("/markAsNotAttend")
+    public ResponseEntity<Map<String, String>> markAsNotAttend() {
+        return attentionService.updateAttentionStatus(AttentionStatus.NOT_ATTENDING);
     @PostMapping("/markAsSuccessful")
     public ResponseEntity<Map<String, String>> markAsSuccessful() {
         return attentionService.updateAttentionStatus(SuccessStatus.SUCCESSFUL);
