@@ -96,7 +96,7 @@ public class WaitingQueueServiceImpl implements WaitingQueueService {
 
         lastQueriedTicketCodeId = null;
 
-        return ResponseEntity.ok(Map.of("message", "Ticket accepted"));
+        return ResponseEntity.ok(Map.of("message", "Ticket accepted", "id", String.valueOf(ticketCode.getId())));
     }
 
     @Override
