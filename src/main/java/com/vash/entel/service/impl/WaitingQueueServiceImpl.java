@@ -66,13 +66,17 @@ public class WaitingQueueServiceImpl implements WaitingQueueService {
     }
 
     @Override
-    public ResponseEntity<Map<String, String>> acceptTicket() {
+    public ResponseEntity<Map<String, String>> acceptTicket(Integer moduleId) {
         if (lastQueriedTicketCodeId == null) {
             return ResponseEntity.ok(Map.of("message", "No se solicitó próximo ticket en cola"));
         }
 
         Ticket_code ticketCode = ticketCodeRepository.findById(lastQueriedTicketCodeId)
                 .orElseThrow(() -> new RuntimeException("Ticket code not found"));
+
+        Module module = moduleRepository.findById(moduleId)
+                .orElseThrow(() -> new RuntimeException("Module not found"));
+        ticketCode.setModule(module);
 
         Attention attention = new Attention();
         attention.setUser(ticketCode.getCustomer());
