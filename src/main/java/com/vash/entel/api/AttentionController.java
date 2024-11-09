@@ -51,13 +51,15 @@ public class AttentionController {
     @PostMapping("/markAsNotAttend")
     public ResponseEntity<Map<String, String>> markAsNotAttend() {
         return attentionService.updateAttentionStatus(AttentionStatus.NOT_ATTENDING);
+    }
     @PostMapping("/markAsSuccessful")
     public ResponseEntity<Map<String, String>> markAsSuccessful() {
-        return attentionService.updateAttentionStatus(SuccessStatus.SUCCESSFUL);
+        return attentionService.updateSuccesStatus(SuccessStatus.SUCCESSFUL);
     }
 
     @PostMapping("/markAsNotSuccessful")
     public ResponseEntity<Map<String, String>> markAsNotSuccessful() {
-        return attentionService.updateAttentionStatus(SuccessStatus.NOT_SUCCESSFUl);
+        return attentionService.updateSuccesStatus(SuccessStatus.NOT_SUCCESSFUl);
     }
+
 }

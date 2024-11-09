@@ -163,6 +163,23 @@ public class WaitingQueueServiceImpl implements WaitingQueueService {
         waitingQueueRepository.save(waitingQueue);
 
         String message = (status == AttentionStatus.ATTEND) ? "Attention marked as ATTEND" : "Attention marked as NOT_ATTENDING";
+        return ResponseEntity.ok(Map.of("message", message));
+    }
+
+    public ResponseEntity<Map<String, String>> updateSuccesStatus(SuccessStatus status) {
+        Optional<Integer> lastAcceptedTicketId = getLastAcceptedTicketId();
+
+        if (lastAcceptedTicketId.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("message", "No se encontró atención para el último ticket aceptado"));
+        }
+
+        Attention attention = attentionRepository.findById(lastAcceptedTicketId.get())
+                .orElseThrow(() -> new RuntimeException("No se encontró atención para el ticket aceptado"));
+
+        Ticket_code ticketCode = (Ticket_code) ticketCodeRepository.findById(lastAcceptedTicketId)
+                .orElseThrow(() -> new RuntimeException("Ticket code not found"));
+
         attention.setSuccessStatus(status);
         attentionRepository.save(attention);
 

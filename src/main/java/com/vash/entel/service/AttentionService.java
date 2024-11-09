@@ -8,8 +8,5 @@ import java.util.Map;
 import java.util.Optional;
 
 public interface AttentionService {
-    Optional<Attention> getLastAcceptedAttention();
-    ResponseEntity<Map<String, String>> updateAttentionStatus(AttentionStatus status);
 }
 
-}
