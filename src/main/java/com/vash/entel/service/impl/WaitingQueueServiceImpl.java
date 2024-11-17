@@ -1,10 +1,8 @@
 package com.vash.entel.service.impl;
 
 import com.vash.entel.dto.NextPendingTicketResponseDTO;
-import com.vash.entel.model.entity.Attention;
+import com.vash.entel.model.entity.*;
 import com.vash.entel.model.entity.Module;
-import com.vash.entel.model.entity.Ticket_code;
-import com.vash.entel.model.entity.WaitingQueue;
 import com.vash.entel.model.enums.AttentionStatus;
 import com.vash.entel.model.enums.ModuleStatus;
 import com.vash.entel.model.enums.SuccessStatus;
@@ -12,6 +10,7 @@ import com.vash.entel.repository.AttentionRepository;
 import com.vash.entel.repository.ModuleRepository;
 import com.vash.entel.repository.TicketCodeRepository;
 import com.vash.entel.repository.WaitingQueueRepository;
+import com.vash.entel.repository.SurveyRepository;
 import com.vash.entel.service.WaitingQueueService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -29,6 +28,7 @@ public class WaitingQueueServiceImpl implements WaitingQueueService {
     private final ModuleRepository moduleRepository;
     private final TicketCodeRepository ticketCodeRepository;
     private final AttentionRepository attentionRepository;
+    private final SurveyRepository surveyRepository;
 
     private Integer lastQueriedTicketCodeId;
     private Integer lastAcceptedTicketId;
@@ -190,4 +190,49 @@ public class WaitingQueueServiceImpl implements WaitingQueueService {
         String message = (status == SuccessStatus.SUCCESSFUL) ? "Attention marked as SUCCESSFUL" : "Attention marked as NOT_SUCCESSFUl";
         return ResponseEntity.ok(Map.of("message", message));
     }
+
+    public ResponseEntity<Map<String, String>> registerSurveyForLastAcceptedTicket(Integer surveyValue) {
+        // Obtener el último ticket aceptado
+        Optional<Integer> lastTicketIdOptional = getLastAcceptedTicketId();
+
+        if (lastTicketIdOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("message", "No se encontró un ticket aceptado previamente"));
+        }
+
+        // Obtener la atención asociada al ticket aceptado
+        Integer lastTicketId = lastTicketIdOptional.get();
+        Attention attention = attentionRepository.findById(lastTicketId)
+                .orElseThrow(() -> new RuntimeException("No se encontró atención asociada al ticket"));
+
+        // Verificar si ya tiene una encuesta
+        // Verificar si ya tiene una encuesta
+        if (attention.getSurvey() != null) {
+            // Si ya tiene una encuesta, actualiza su valor
+            Survey existingSurvey = attention.getSurvey();
+            existingSurvey.setValue(surveyValue);
+            surveyRepository.save(existingSurvey); // Actualizar la encuesta existente
+
+            return ResponseEntity.ok(Map.of("message", "Survey value updated successfully"));
+        }
+
+        // Validar el valor de la encuesta
+        if (surveyValue < 1 || surveyValue > 5) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("message", "Survey value must be between 1 and 5"));
+        }
+
+        // Crear y guardar la encuesta primero
+        Survey survey = new Survey();
+        survey.setValue(surveyValue);
+        survey.setCreated_at(LocalDateTime.now());
+        Survey savedSurvey = surveyRepository.save(survey);
+
+        // Asociar la encuesta guardada a la atención
+        attention.setSurvey(savedSurvey);
+        attentionRepository.save(attention);
+
+        return ResponseEntity.ok(Map.of("message", "Survey registered successfully"));
+    }
+
 }

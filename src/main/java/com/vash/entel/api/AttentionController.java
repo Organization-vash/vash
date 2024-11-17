@@ -1,11 +1,13 @@
 package com.vash.entel.api;
 
+import com.vash.entel.model.entity.Survey;
 import com.vash.entel.model.enums.AttentionStatus;
 import com.vash.entel.service.AttentionService;
 import com.vash.entel.model.enums.SuccessStatus;
 import com.vash.entel.service.impl.AttentionServiceImpl;
 import com.vash.entel.service.impl.WaitingQueueServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +19,6 @@ import java.util.Map;
 public class AttentionController {
     private final WaitingQueueServiceImpl waitingQueueService;
     private final AttentionService attentionService;
-
     @GetMapping("/next")
     public ResponseEntity<?> getNextPendingTicket(@RequestParam("moduleId") Integer moduleId){
         return waitingQueueService.getNextPendingTicket(moduleId)
@@ -66,4 +67,12 @@ public class AttentionController {
     public ResponseEntity<Map<String, String>> finalizeTicket(@PathVariable Integer id) {
         return attentionService.finalizeAttention(id);
     }
+
+    @PostMapping("/register-survey")
+    public ResponseEntity<Map<String, String>> registerSurveyForLastAcceptedTicket(
+            @RequestBody Map<String, Integer> request) {
+        Integer surveyValue = request.get("value");
+        return waitingQueueService.registerSurveyForLastAcceptedTicket(surveyValue);
+    }
+
 }
