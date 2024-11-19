@@ -19,7 +19,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/generateCode")
-@CrossOrigin(origins = "http://localhost:4200")
 public class TicketCodeController {
     private final TicketCodeService ticketCodeService;
     private final ServiceServiceImpl serviceService;
