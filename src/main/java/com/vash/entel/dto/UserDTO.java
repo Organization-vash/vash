@@ -9,6 +9,8 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Data
 public class UserDTO {
     private Integer id;
@@ -48,12 +50,13 @@ public class UserDTO {
     private Role role;
 
     private String username;
+    private LocalDateTime created;
 
     public UserDTO(){
     }
 
 
-    public UserDTO(Integer id, DocumentType documentType, Integer numberDoc, String name, String lastName, Integer moduleId, String email, String password, Role role, String username) {
+    public UserDTO(Integer id, DocumentType documentType, Integer numberDoc, String name, String lastName, Integer moduleId, String email, String password, Role role, String username, LocalDateTime created) {
         this.id = id;
         this.documentType = documentType;
         this.numberDoc = numberDoc;
@@ -64,6 +67,7 @@ public class UserDTO {
         this.password = password;
         this.role = role;
         this.username = username;
+        this.created = created;
     }
 
 }
