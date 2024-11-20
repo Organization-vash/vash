@@ -77,12 +77,9 @@ public class ModuleServiceImpl implements ModuleService {
             module.setUpdatedAt(LocalDateTime.now());
             save(module);
             return "Módulo desactivado.";
-        
-
     }
     @Override
     public boolean existsById(Integer id) {
         return moduleRepository.existsById(id);
     }
-
 }

@@ -2,8 +2,8 @@ package com.vash.entel.api;
 
 import com.vash.entel.model.enums.AttentionStatus;
 import com.vash.entel.service.AttentionService;
+import com.vash.entel.service.TicketCodeService;
 import com.vash.entel.model.enums.SuccessStatus;
-import com.vash.entel.service.impl.AttentionServiceImpl;
 import com.vash.entel.service.impl.WaitingQueueServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +17,7 @@ import java.util.Map;
 public class AttentionController {
     private final WaitingQueueServiceImpl waitingQueueService;
     private final AttentionService attentionService;
+    private final TicketCodeService ticketCodeService;
 
     @GetMapping("/next")
     public ResponseEntity<?> getNextPendingTicket(@RequestParam("moduleId") Integer moduleId){
