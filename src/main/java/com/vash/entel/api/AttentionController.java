@@ -1,5 +1,6 @@
 package com.vash.entel.api;
 
+import com.vash.entel.dto.TicketHistoryDTO;
 import com.vash.entel.model.enums.AttentionStatus;
 import com.vash.entel.service.AttentionService;
 import com.vash.entel.service.TicketCodeService;
@@ -9,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -66,5 +68,11 @@ public class AttentionController {
     @PostMapping("/{id}/finalize")
     public ResponseEntity<Map<String, String>> finalizeTicket(@PathVariable Integer id) {
         return attentionService.finalizeAttention(id);
+    }
+
+    @GetMapping("/getHistory")
+    public ResponseEntity<List<TicketHistoryDTO>> getHistoryByModule(@RequestParam Integer moduleId){
+        List<TicketHistoryDTO> history = ticketCodeService.getTodayTicketsByModule(moduleId);
+        return ResponseEntity.ok(history);
     }
 }
