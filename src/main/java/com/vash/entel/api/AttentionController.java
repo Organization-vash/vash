@@ -17,7 +17,6 @@ import java.util.Map;
 public class AttentionController {
     private final WaitingQueueServiceImpl waitingQueueService;
     private final AttentionService attentionService;
-    private final TicketCodeService ticketCodeService;
 
     @GetMapping("/next")
     public ResponseEntity<?> getNextPendingTicket(@RequestParam("moduleId") Integer moduleId){

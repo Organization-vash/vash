@@ -1,5 +1,7 @@
 package com.vash.entel.service.impl;
 
+import com.vash.entel.dto.SearchCodeDTO;
+import com.vash.entel.mapper.SearchCodeMapper;
 import com.vash.entel.model.entity.Agency;
 import com.vash.entel.model.entity.Customer;
 import com.vash.entel.model.entity.Ticket_code;
@@ -7,13 +9,21 @@ import com.vash.entel.repository.CustomerRepository;
 import com.vash.entel.repository.TicketCodeRepository;
 import com.vash.entel.service.TicketCodeService;
 import com.vash.entel.service.WaitingQueueService;
+
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class TicketCodeServiceImpl implements TicketCodeService {
+    @Autowired
+    private SearchCodeMapper searchCodeMapper;
+
     @Autowired
     private TicketCodeRepository ticketCodeRepository;
 
@@ -66,5 +76,11 @@ public class TicketCodeServiceImpl implements TicketCodeService {
 
     private int extractNumber(String code) {
         return Integer.parseInt(code.substring(1)); 
+    }
+
+    @Override
+    public List<SearchCodeDTO> searchTicketsByCode(String code) {
+        List<Object[]> results = ticketCodeRepository.findByCode(code);
+        return searchCodeMapper.toDtoList(results);
     }
 }

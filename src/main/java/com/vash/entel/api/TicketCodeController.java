@@ -1,5 +1,6 @@
 package com.vash.entel.api;
 
+import com.vash.entel.dto.SearchCodeDTO;
 import com.vash.entel.dto.ServiceDTO;
 import com.vash.entel.mapper.ServiceMapper;
 import com.vash.entel.model.entity.Agency;
@@ -14,18 +15,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/generateCode")
+@RequestMapping("/code")
 public class TicketCodeController {
     private final TicketCodeService ticketCodeService;
     private final ServiceServiceImpl serviceService;
     private final AgencyServiceImpl agencyService;
     private final ServiceMapper serviceMapper;
 
-    @PostMapping
+    @PostMapping("/generateCode")
     private ResponseEntity<Map<String, Object>> generateTicketCode(
             @RequestParam Long document,
             @RequestParam String fullname,
@@ -44,5 +46,11 @@ public class TicketCodeController {
         response.put("code", code);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<SearchCodeDTO>> searchTicketsByCode(@RequestParam String code) {
+        List<SearchCodeDTO> tickets = ticketCodeService.searchTicketsByCode(code);
+        return ResponseEntity.ok(tickets);
     }
 }
