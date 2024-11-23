@@ -41,7 +41,7 @@ public class ServiceServiceImpl implements ServiceService {
     @Override
     public ServiceDTO findByName(String name) {
         Service service = serviceRepository.findByName(name)
-                .orElseThrow(()-> new ResourceNotFoundException("No se encontro coincidencia"));
+                .orElseThrow(() -> new ResourceNotFoundException("No se encontró el servicio con el nombre: " + name));
         return serviceMapper.toDTO(service);
     }
 
