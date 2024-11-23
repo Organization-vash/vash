@@ -1,13 +1,9 @@
 package com.vash.entel.dto;
 
-import com.vash.entel.model.enums.Role;
+import com.vash.entel.model.enums.ERole;
 import com.vash.entel.model.enums.DocumentType;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.*;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
 
@@ -30,8 +26,6 @@ public class UserDTO {
     @Pattern(regexp = "^[a-zA-Z ]+$", message = "El apellido solo puede contener letras")
     private String lastName;
 
-    @Setter
-    @Getter
     @NotNull(message = "El ID del módulo es obligatorio")
     private Integer moduleId;
 
@@ -47,27 +41,9 @@ public class UserDTO {
     private String password;
 
     @NotNull(message = "El rol es obligatorio")
-    private Role role;
+    private ERole role;
 
     private String username;
     private LocalDateTime created;
-
-    public UserDTO(){
-    }
-
-
-    public UserDTO(Integer id, DocumentType documentType, Integer numberDoc, String name, String lastName, Integer moduleId, String email, String password, Role role, String username, LocalDateTime created) {
-        this.id = id;
-        this.documentType = documentType;
-        this.numberDoc = numberDoc;
-        this.name = name;
-        this.lastName = lastName;
-        this.moduleId = moduleId;
-        this.email = email;
-        this.password = password;
-        this.role = role;
-        this.username = username;
-        this.created = created;
-    }
 
 }

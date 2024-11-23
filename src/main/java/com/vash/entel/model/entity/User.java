@@ -1,12 +1,8 @@
 package com.vash.entel.model.entity;
 
-import com.vash.entel.model.enums.DocumentType;
-import com.vash.entel.model.enums.Role;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
 import lombok.Data;
-
-import javax.net.ssl.SSLSession;
-import java.time.LocalDateTime;
+import jakarta.persistence.*;
 
 @Data
 @Entity
@@ -17,36 +13,19 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Enumerated(EnumType.STRING)
-    private DocumentType documentType;
-
-    @Column(name = "number_doc", nullable = false, unique = true)
-    private Integer numberDoc;
-
-    @Column(name = "name", nullable = false)
-    private String name;
-
-    @Column(name = "last_name", nullable = false)
-    private String lastName;
-
+    @Column(nullable = false, unique = true)
     private String email;
 
     private String password;
 
-    @Column(name = "username")
-    private String username;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Adviser adviser;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Supervisor supervisor;
 
-    @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-
-    @Enumerated(EnumType.STRING)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "role_id", referencedColumnName ="id" )
     private Role role;
-
-    @OneToOne
-    @JoinColumn(name = "module_id",  nullable = false)
-    private Module module;
 }
+

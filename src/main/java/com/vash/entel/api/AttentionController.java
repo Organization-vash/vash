@@ -7,6 +7,7 @@ import com.vash.entel.service.impl.AttentionServiceImpl;
 import com.vash.entel.service.impl.WaitingQueueServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -14,6 +15,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/attention")
 @RequiredArgsConstructor
+@PreAuthorize("hasAnyRole('ADMIN', 'ADVISER','SUPERVISRO')")
 public class AttentionController {
     private final WaitingQueueServiceImpl waitingQueueService;
     private final AttentionService attentionService;

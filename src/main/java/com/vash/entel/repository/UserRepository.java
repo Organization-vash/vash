@@ -11,11 +11,33 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
-    Optional<User> findByNameAndLastName(String name, String lastName);
     Optional<User> findByEmail(String email);
-    Optional<User> findByNumberDoc(Integer numberDoc);
-    Optional<User> findByModuleId(Integer moduleId);
 
-    @Query("SELECT u FROM User u WHERE u.numberDoc = :numberDoc OR u.name = :name")
+    @Query("SELECT u FROM User u " +
+            "LEFT JOIN u.adviser a " +
+            "LEFT JOIN u.supervisor s " +
+            "WHERE (a.numberDoc = :numberDoc OR s.numberDoc = :numberDoc)")
+    Optional<User> findByNumberDoc(@Param("numberDoc") Integer numberDoc);
+
+
+    @Query("SELECT u FROM User u LEFT JOIN u.adviser a LEFT JOIN u.supervisor s WHERE a.module.id = :moduleId OR s.module.id = :moduleId")
+    Optional<User> findByModuleId(@Param("moduleId") Integer moduleId);
+
+
+    @Query("SELECT u FROM User u " +
+            "LEFT JOIN u.adviser a " +
+            "LEFT JOIN u.supervisor s " +
+            "WHERE (a.numberDoc = :numberDoc OR s.numberDoc = :numberDoc) " +
+            "OR (a.name = :name OR s.name = :name)")
     List<User> findByNumberDocOrName(@Param("numberDoc") Integer numberDoc, @Param("name") String name);
+
+    boolean existsByEmail(String email);
+    //Metodo para buscar un usuario por email (sera usado en la autenticacion)
+    boolean existsByEmailAndIdNot(String email, Integer id);
+    @Query("SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END FROM User u " +
+            "LEFT JOIN u.adviser a " +
+            "LEFT JOIN u.supervisor s " +
+            "WHERE (a.name = :name AND a.lastName = :lastName) OR (s.name = :name AND s.lastName = :lastName)")
+    boolean existsByNameAndLastName(@Param("name") String name, @Param("lastName") String lastName);
+
 }
