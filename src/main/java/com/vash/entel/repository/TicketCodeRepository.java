@@ -12,4 +12,5 @@ import java.util.Optional;
 public interface TicketCodeRepository extends JpaRepository<Ticket_code, Integer> {
     Ticket_code findTopByServiceAndAgencyOrderByCreatedDesc(Service service, Agency agency);
     Optional<Object> findById(Optional<Integer> lastAcceptedTicketId);
+    Optional<Ticket_code> findTopByOrderByCreatedDesc();
 }
