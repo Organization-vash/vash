@@ -76,12 +76,12 @@ public class AttentionController {
     }
     
 
-   @PostMapping("/{attentionId}/remove-service")
-public ResponseEntity<Map<String, String>> removeServiceFromAttention(
-        @PathVariable Integer attentionId,
-        @RequestParam Integer serviceId) {
-    attentionService.removeServiceFromAttention(attentionId, serviceId);
-    return ResponseEntity.ok(Map.of("message", "Servicio eliminado de la atención con éxito"));
-}
-
+    @PostMapping("/{attentionId}/remove-service")
+    public ResponseEntity<Map<String, String>> removeServiceFromAttention(
+            @PathVariable Integer attentionId,
+            @RequestParam Integer serviceId) {
+        attentionService.removeServiceFromAttention(attentionId, serviceId);
+        return ResponseEntity.ok(Map.of("message", "Servicio eliminado de la atención con éxito"));
+    }
+    
 }

@@ -5,6 +5,7 @@ import com.vash.entel.model.enums.SuccessStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
+import java.util.ArrayList; // Import necesario para inicializar la lista
 import java.util.List;
 
 @Data
@@ -43,5 +44,5 @@ public class Attention {
         joinColumns = @JoinColumn(name = "attention_id"),
         inverseJoinColumns = @JoinColumn(name = "service_id")
     )
-    private List<com.vash.entel.model.entity.Service> services; // Usar el paquete completo
+    private List<com.vash.entel.model.entity.Service> services = new ArrayList<>(); // Inicialización de la lista
 }
