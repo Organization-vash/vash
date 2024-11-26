@@ -27,10 +27,11 @@ public class AttentionController {
     }
 
     @PostMapping("/accept")
-    public ResponseEntity<Map<String, String>> acceptTicket(@RequestParam Integer moduleId){
-        waitingQueueService.storeLastAcceptedTicketId();
-        return waitingQueueService.acceptTicket(moduleId);
-    }
+public ResponseEntity<Map<String, String>> acceptTicket(@RequestParam Integer moduleId) {
+    return waitingQueueService.acceptTicket(moduleId);
+}
+
+
 
     @PostMapping("/reject")
     public ResponseEntity<Map<String, String>> rejectTicket() {
