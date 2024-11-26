@@ -35,4 +35,8 @@ public class Attention {
     @OneToOne
     @JoinColumn(name = "survey_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_attention_survey"))
     private Survey survey;
+
+    @ManyToOne
+    @JoinColumn(name = "adviser_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_attention_adviser"))
+    private User adviser;
 }
