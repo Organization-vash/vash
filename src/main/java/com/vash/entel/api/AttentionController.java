@@ -13,6 +13,20 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.List;
+
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @RestController
 @RequestMapping("/attention")
@@ -76,6 +90,37 @@ public class AttentionController {
     public ResponseEntity<Map<String, String>> finalizeTicket(@PathVariable Integer id) {
         return attentionService.finalizeAttention(id);
     }
+
+    @GetMapping("/report")
+    public ResponseEntity<List<Map<String, Object>>> getReportData() {
+        List<Map<String, Object>> reportData = attentionService.getReportData();
+        return ResponseEntity.ok(reportData);
+    }
+
+    @GetMapping("/download-report")
+    public ResponseEntity<byte[]> downloadReport() {
+        try {
+            // Llama al servicio para obtener los datos del reporte
+            byte[] reportData = attentionService.generateExcelReport();
+
+            // Formatea el nombre del archivo
+            String filename = "Reporte_" + LocalDateTime.now()
+                    .format(DateTimeFormatter.ofPattern("HH-mm_dd-MM-yyyy")) + ".xlsx";
+
+            // Crea los headers para la respuesta HTTP
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename);
+
+            // Devuelve el archivo Excel como respuesta
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(reportData);
+        } catch (IOException e) {
+            // Maneja los errores y devuelve el código de estado HTTP adecuado
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
     @PostMapping("/{attentionId}/add-service")
     public ResponseEntity<Map<String, String>> addServiceToAttention(
             @PathVariable Integer attentionId,

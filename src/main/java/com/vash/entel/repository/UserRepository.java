@@ -15,7 +15,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     Optional<User> findByEmail(String email);
     Optional<User> findByNumberDoc(Integer numberDoc);
     Optional<User> findByModuleId(Integer moduleId);
-
+    Optional<User> findByUsername(String username);
     @Query("SELECT u FROM User u WHERE u.numberDoc = :numberDoc OR u.name = :name")
     List<User> findByNumberDocOrName(@Param("numberDoc") Integer numberDoc, @Param("name") String name);
 }

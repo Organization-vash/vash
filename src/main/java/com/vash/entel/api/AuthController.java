@@ -13,6 +13,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/auth")
+
 public class AuthController {
     private final UserServiceImpl userService;
 
@@ -25,6 +26,7 @@ public class AuthController {
             Map<String, Object> response = new HashMap<>();
             response.put("message", "Login successful");
             response.put("role", user.getRole()); // Rol del usuario
+            response.put("username", user.getUsername());//
             response.put("moduleId", user.getModule() != null ? user.getModule().getId() : null); // ID del módulo si está asociado
             response.put("id", user.getId()); // ID del usuario
             response.put("name", user.getName()); // Nombre del usuario

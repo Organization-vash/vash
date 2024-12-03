@@ -8,9 +8,16 @@ import com.vash.entel.model.entity.Ticket_code;
 import com.vash.entel.model.entity.WaitingQueue;
 import com.vash.entel.model.enums.AttentionStatus;
 import com.vash.entel.model.enums.ModuleStatus;
+import com.vash.entel.model.enums.Role;
 import com.vash.entel.model.enums.SuccessStatus;
+import com.vash.entel.repository.AttentionRepository;
+import com.vash.entel.repository.ModuleRepository;
+import com.vash.entel.repository.TicketCodeRepository;
+import com.vash.entel.repository.WaitingQueueRepository;
+import com.vash.entel.service.AuthService;
 import com.vash.entel.repository.*;
 import com.vash.entel.service.WaitingQueueService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +40,8 @@ public class WaitingQueueServiceImpl implements WaitingQueueService {
     private final SurveyRepository surveyRepository;
     private Integer lastQueriedTicketCodeId;
     private Integer lastAcceptedTicketId;
+    private final AuthService authService; // Inyectamos AuthService
+    private final HttpServletRequest request; // Inyección de HttpServletRequest
 
     @Override
     public Optional<NextPendingTicketResponseDTO> getNextPendingTicket(Integer moduleId) {
@@ -95,6 +104,13 @@ public class WaitingQueueServiceImpl implements WaitingQueueService {
             return ResponseEntity.ok(Map.of("message", "No se solicitó próximo ticket en cola"));
         }
 
+
+        User currentAdviser = authService.getAuthenticatedUser(request);
+        if (currentAdviser.getRole() != Role.ADVISER) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "Solo los asesores pueden aceptar tickets"));
+        }
+
         // Buscar el ticket consultado previamente
         Ticket_code ticketCode = ticketCodeRepository.findById(lastQueriedTicketCodeId)
                 .orElseThrow(() -> new RuntimeException("Ticket code not found"));
@@ -106,7 +122,9 @@ public class WaitingQueueServiceImpl implements WaitingQueueService {
 
         // Crear una nueva atención
         Attention attention = new Attention();
-        attention.setUser(ticketCode.getCustomer()); // Asociar al cliente del ticket
+        attention.setUser(ticketCode.getCustomer());
+        attention.setAdviser(currentAdviser);        // Asesor autenticado
+
         attention.setCreated_at(LocalDateTime.now());
         attention.setAttentionStatus(AttentionStatus.ATTENDING);
 
