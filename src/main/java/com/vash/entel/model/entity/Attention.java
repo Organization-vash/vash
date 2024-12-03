@@ -5,6 +5,8 @@ import com.vash.entel.model.enums.SuccessStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
+import java.util.ArrayList; // Import necesario para inicializar la lista
+import java.util.List;
 
 @Data
 @Entity
@@ -36,7 +38,17 @@ public class Attention {
     @JoinColumn(name = "survey_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_attention_survey"))
     private Survey survey;
 
+
     @ManyToOne
     @JoinColumn(name = "adviser_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_attention_adviser"))
     private User adviser;
+}
+
+    @ManyToMany
+    @JoinTable(
+        name = "attention_services",
+        joinColumns = @JoinColumn(name = "attention_id"),
+        inverseJoinColumns = @JoinColumn(name = "service_id")
+    )
+    private List<com.vash.entel.model.entity.Service> services = new ArrayList<>(); // Inicialización de la lista
 }

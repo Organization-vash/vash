@@ -1,4 +1,6 @@
 package com.vash.entel.api;
+
+import com.vash.entel.dto.TicketHistoryDTO;
 import com.vash.entel.model.entity.Survey;
 import com.vash.entel.model.enums.AttentionStatus;
 import com.vash.entel.service.AttentionService;
@@ -10,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -28,8 +31,7 @@ public class AttentionController {
     }
 
     @PostMapping("/accept")
-    public ResponseEntity<Map<String, String>> acceptTicket(@RequestParam Integer moduleId){
-        waitingQueueService.storeLastAcceptedTicketId();
+    public ResponseEntity<Map<String, String>> acceptTicket(@RequestParam Integer moduleId) {
         return waitingQueueService.acceptTicket(moduleId);
     }
 
@@ -74,5 +76,26 @@ public class AttentionController {
     @PostMapping("/{id}/finalize")
     public ResponseEntity<Map<String, String>> finalizeTicket(@PathVariable Integer id) {
         return attentionService.finalizeAttention(id);
+    }
+    @PostMapping("/{attentionId}/add-service")
+    public ResponseEntity<Map<String, String>> addServiceToAttention(
+            @PathVariable Integer attentionId,
+            @RequestParam Integer serviceId) {
+        attentionService.addServiceToAttention(attentionId, serviceId);
+        return ResponseEntity.ok(Map.of("message", "Servicio agregado a la atención con éxito"));
+    }
+
+    @PostMapping("/{attentionId}/remove-service")
+    public ResponseEntity<Map<String, String>> removeServiceFromAttention(
+            @PathVariable Integer attentionId,
+            @RequestParam Integer serviceId) {
+        attentionService.removeServiceFromAttention(attentionId, serviceId);
+        return ResponseEntity.ok(Map.of("message", "Servicio eliminado de la atención con éxito"));
+    }
+
+    @GetMapping("/getHistory")
+    public ResponseEntity<List<TicketHistoryDTO>> getHistoryByModule(@RequestParam Integer moduleId){
+        List<TicketHistoryDTO> history = ticketCodeService.getTodayTicketsByModule(moduleId);
+        return ResponseEntity.ok(history);
     }
 }
