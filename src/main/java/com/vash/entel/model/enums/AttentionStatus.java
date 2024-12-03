@@ -5,4 +5,5 @@ public enum AttentionStatus {
     WAITING,
     ATTENDING,
     NOT_ATTENDING,
+    TRANSFERRED
 }

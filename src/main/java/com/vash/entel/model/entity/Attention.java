@@ -16,6 +16,7 @@ public class Attention {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(name = "time", nullable = true)
     private LocalDateTime time;
 
     @Column(name = "created_at", nullable = false)
@@ -38,11 +39,9 @@ public class Attention {
     @JoinColumn(name = "survey_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_attention_survey"))
     private Survey survey;
 
-
     @ManyToOne
     @JoinColumn(name = "adviser_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_attention_adviser"))
     private User adviser;
-}
 
     @ManyToMany
     @JoinTable(
