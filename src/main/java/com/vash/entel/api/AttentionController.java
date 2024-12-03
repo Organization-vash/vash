@@ -29,10 +29,11 @@ public class AttentionController {
     }
 
     @PostMapping("/accept")
-    public ResponseEntity<Map<String, String>> acceptTicket(@RequestParam Integer moduleId){
-        waitingQueueService.storeLastAcceptedTicketId();
-        return waitingQueueService.acceptTicket(moduleId);
-    }
+public ResponseEntity<Map<String, String>> acceptTicket(@RequestParam Integer moduleId) {
+    return waitingQueueService.acceptTicket(moduleId);
+}
+
+
 
     @PostMapping("/reject")
     public ResponseEntity<Map<String, String>> rejectTicket() {
@@ -76,7 +77,22 @@ public class AttentionController {
     public ResponseEntity<Map<String, String>> finalizeTicket(@PathVariable Integer id) {
         return attentionService.finalizeAttention(id);
     }
+    @PostMapping("/{attentionId}/add-service")
+    public ResponseEntity<Map<String, String>> addServiceToAttention(
+            @PathVariable Integer attentionId,
+            @RequestParam Integer serviceId) {
+        attentionService.addServiceToAttention(attentionId, serviceId);
+        return ResponseEntity.ok(Map.of("message", "Servicio agregado a la atención con éxito"));
+    }
+    
 
+    @PostMapping("/{attentionId}/remove-service")
+    public ResponseEntity<Map<String, String>> removeServiceFromAttention(
+            @PathVariable Integer attentionId,
+            @RequestParam Integer serviceId) {
+        attentionService.removeServiceFromAttention(attentionId, serviceId);
+        return ResponseEntity.ok(Map.of("message", "Servicio eliminado de la atención con éxito"));
+    }
     @GetMapping("/getHistory")
     public ResponseEntity<List<TicketHistoryDTO>> getHistoryByModule(@RequestParam Integer moduleId){
         List<TicketHistoryDTO> history = ticketCodeService.getTodayTicketsByModule(moduleId);
