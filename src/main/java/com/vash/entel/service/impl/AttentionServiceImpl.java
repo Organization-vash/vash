@@ -9,22 +9,19 @@ import com.vash.entel.model.enums.SuccessStatus;
 import com.vash.entel.repository.AttentionRepository;
 import com.vash.entel.repository.ServiceRepository;
 import com.vash.entel.service.AttentionService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
 
+@RequiredArgsConstructor
 @org.springframework.stereotype.Service 
 public class AttentionServiceImpl implements AttentionService {
 
     private final AttentionRepository attentionRepository;
     private final ServiceRepository serviceRepository;
-
-    public AttentionServiceImpl(AttentionRepository attentionRepository, ServiceRepository serviceRepository) {
-        this.attentionRepository = attentionRepository;
-        this.serviceRepository = serviceRepository;
-    }
 
     @Override
     public void addServiceToAttention(Integer attentionId, Integer serviceId) {
