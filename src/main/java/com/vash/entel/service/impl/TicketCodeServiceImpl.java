@@ -5,8 +5,12 @@ import com.vash.entel.mapper.SearchCodeMapper;
 import com.vash.entel.dto.TicketHistoryDTO;
 import com.vash.entel.model.entity.Agency;
 import com.vash.entel.model.entity.Customer;
+import com.vash.entel.model.entity.Module;
 import com.vash.entel.model.entity.Ticket_code;
+import com.vash.entel.model.enums.AttentionStatus;
+import com.vash.entel.model.enums.ModuleStatus;
 import com.vash.entel.repository.CustomerRepository;
+import com.vash.entel.repository.ModuleRepository;
 import com.vash.entel.repository.TicketCodeRepository;
 import com.vash.entel.service.TicketCodeService;
 import com.vash.entel.service.WaitingQueueService;
@@ -19,6 +23,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,6 +40,9 @@ public class TicketCodeServiceImpl implements TicketCodeService {
 
     @Autowired
     private WaitingQueueService waitingQueueService;
+
+    @Autowired
+    private final ModuleRepository moduleRepository;
 
     @Override
     public String generateTicketCode(Long documentNumber, String fullname, com.vash.entel.model.entity.Service service, Agency agency){
@@ -78,6 +86,27 @@ public class TicketCodeServiceImpl implements TicketCodeService {
                 ticket.getService().getName(),
                 ticket.getCustomer().getFullname()
         )).collect(Collectors.toList());
+    }
+
+    @Override
+    public Optional<Ticket_code> getTicketByIdAndStatus(Integer ticketCodeId, AttentionStatus status) {
+        return ticketCodeRepository.findByIdAndAttention_AttentionStatus(ticketCodeId, status);
+    }
+
+    @Override
+    public void transferTicketToModule(Integer ticketCodeId, Integer moduleId) {
+        Ticket_code ticket = getTicketByIdAndStatus(ticketCodeId, AttentionStatus.ATTENDING)
+                .orElseThrow(() -> new RuntimeException("Ticket not found"));
+
+        Module module = moduleRepository.findById(moduleId)
+                .orElseThrow(() -> new RuntimeException("Module not found"));
+
+        if (!module.getModuleStatus().equals(ModuleStatus.ACTIVE)) {
+            throw new RuntimeException("Module is not active");
+        }
+
+        ticket.setModule(module);
+        ticketCodeRepository.save(ticket);
     }
 
     private boolean isNewMonth(Ticket_code lastCode) {
