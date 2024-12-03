@@ -11,5 +11,5 @@ public interface AgencyRepository extends JpaRepository<Agency, Integer> {
     Optional<Agency> findBySeat(String seat);
     Optional<Agency> findBySeatAndCity(String seat, String city);
     Optional<Agency> findByCityAndSeat(String city, String seat);
-
+    Optional<Agency> findByCity(String city); // Cambia "name" por "city" si es lo que necesitas buscar
 }
