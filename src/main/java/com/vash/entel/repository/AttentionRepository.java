@@ -8,7 +8,14 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
+import java.util.List;
+import org.springframework.data.jpa.repository.Query;
+
+
 @Repository
 public interface AttentionRepository extends JpaRepository<Attention, Integer> {
     Optional<Attention> findBySuccessStatusAndAttentionStatus(SuccessStatus successStatus, AttentionStatus attentionStatus);
+
+    @Query(value = "SELECT * FROM get_attention_report()", nativeQuery = true)
+    List<Object[]> getAttentionReport();
 }

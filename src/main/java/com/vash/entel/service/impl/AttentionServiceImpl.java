@@ -13,7 +13,18 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
 
+
+import lombok.RequiredArgsConstructor;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
+@RequiredArgsConstructor
 public class AttentionServiceImpl implements AttentionService {
 
     @Autowired
@@ -40,4 +51,76 @@ public class AttentionServiceImpl implements AttentionService {
             return ResponseEntity.badRequest().body(Map.of("message", "Atención no encontrada"));
         }
     }
+
+    @Override
+    public byte[] generateExcelReport() throws IOException {
+        // Lógica para obtener los datos y construir el Excel
+        List<Object[]> reportData = attentionRepository.getAttentionReport();
+        try (Workbook workbook = new XSSFWorkbook()) {
+            Sheet sheet = workbook.createSheet("Reporte de Atenciones");
+
+            // Crear encabezados
+            Row headerRow = sheet.createRow(0);
+            String[] headers = {
+                    "DocNumber", "Fullname", "DocumentType", "Code", "Service",
+                    "AttentionStatus", "SuccessStatus", "Adviser", "SurveyValue"
+            };
+            for (int i = 0; i < headers.length; i++) {
+                Cell cell = headerRow.createCell(i);
+                cell.setCellValue(headers[i]);
+                cell.setCellStyle(createHeaderStyle(workbook));
+            }
+
+            // Llenar datos en el Excel
+            int rowNum = 1;
+            for (Object[] rowData : reportData) {
+                Row row = sheet.createRow(rowNum++);
+                for (int col = 0; col < rowData.length; col++) {
+                    Cell cell = row.createCell(col);
+                    cell.setCellValue(rowData[col] == null ? "" : rowData[col].toString());
+                }
+            }
+
+            // Ajustar tamaños de las columnas
+            for (int i = 0; i < headers.length; i++) {
+                sheet.autoSizeColumn(i);
+            }
+
+            // Convertir el workbook a un array de bytes
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            workbook.write(outputStream);
+            return outputStream.toByteArray();
+        }
+    }
+
+    private CellStyle createHeaderStyle(Workbook workbook) {
+        Font font = workbook.createFont();
+        font.setBold(true);
+        font.setFontHeightInPoints((short) 12);
+
+        CellStyle style = workbook.createCellStyle();
+        style.setFont(font);
+        style.setAlignment(HorizontalAlignment.CENTER);
+        style.setVerticalAlignment(VerticalAlignment.CENTER);
+        return style;
+    }
+
+    @Override
+    public List<Map<String, Object>> getReportData() {
+        List<Object[]> rawData = attentionRepository.getAttentionReport();
+
+        // Convertir los resultados en una lista de mapas
+        return rawData.stream().map(row -> Map.of(
+                "DocNumber", row[0],
+                "Fullname", row[1],
+                "DocumentType", row[2],
+                "Code", row[3],
+                "Service", row[4],
+                "AttentionStatus", row[5],
+                "SuccessStatus", row[6],
+                "Adviser", row[7],
+                "SurveyValue", row[8]
+        )).collect(Collectors.toList());
+    }
+
 }
