@@ -1,11 +1,12 @@
 package com.vash.entel.api;
-
+import com.vash.entel.model.entity.Survey;
 import com.vash.entel.model.enums.AttentionStatus;
 import com.vash.entel.service.AttentionService;
 import com.vash.entel.service.TicketCodeService;
 import com.vash.entel.model.enums.SuccessStatus;
 import com.vash.entel.service.impl.WaitingQueueServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -61,6 +62,13 @@ public class AttentionController {
     @PostMapping("/markAsNotSuccessful")
     public ResponseEntity<Map<String, String>> markAsNotSuccessful() {
         return waitingQueueService.updateSuccesStatus(SuccessStatus.NOT_SUCCESSFUl);
+    }
+
+    @PostMapping("/register-survey")
+    public ResponseEntity<Map<String, String>> registerSurveyForLastAcceptedTicket(
+            @RequestBody Map<String, Integer> request) {
+        Integer surveyValue = request.get("value");
+        return waitingQueueService.registerSurveyForLastAcceptedTicket(surveyValue);
     }
 
     @PostMapping("/{id}/finalize")
