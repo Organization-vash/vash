@@ -27,4 +27,8 @@ public class Derivate {
     @ManyToOne
     @JoinColumn(name = "customer")
     private Customer customer;
+
+    @ManyToOne
+    @JoinColumn(name = "attention_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_derivate_attention"))
+    private Attention attention;
 }

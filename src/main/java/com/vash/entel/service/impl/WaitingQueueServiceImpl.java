@@ -74,8 +74,6 @@ public class WaitingQueueServiceImpl implements WaitingQueueService {
         if (waitingQueue != null) {
             Ticket_code ticketCode = waitingQueue.getTicketCode();
 
-            lastQueriedTicketCodeId = ticketCode.getId();
-
             NextPendingTicketResponseDTO responseDTO = new NextPendingTicketResponseDTO(
                     ticketCode.getCode(),
                     ticketCode.getService().getName(),
@@ -180,6 +178,7 @@ public class WaitingQueueServiceImpl implements WaitingQueueService {
         derivate.setCustomer(ticketCode.getCustomer());
         derivate.setCreatedAt(LocalDateTime.now());
         derivate.setAttentionStatus(AttentionStatus.TRANSFERRED);
+        derivate.setAttention(ticketCode.getAttention());
 
         derivateRepository.save(derivate);
     }
