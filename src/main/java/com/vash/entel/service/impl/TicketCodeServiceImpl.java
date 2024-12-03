@@ -2,6 +2,7 @@ package com.vash.entel.service.impl;
 
 import com.vash.entel.dto.SearchCodeDTO;
 import com.vash.entel.mapper.SearchCodeMapper;
+import com.vash.entel.dto.TicketHistoryDTO;
 import com.vash.entel.model.entity.Agency;
 import com.vash.entel.model.entity.Customer;
 import com.vash.entel.model.entity.Ticket_code;
@@ -17,6 +18,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -61,6 +64,20 @@ public class TicketCodeServiceImpl implements TicketCodeService {
         waitingQueueService.addTicketToQueue(ticketCode);
 
         return newCode;
+    }
+
+    @Override
+    public List<TicketHistoryDTO> getTodayTicketsByModule(Integer moduleId){
+        LocalDateTime startOfDay = LocalDateTime.now().toLocalDate().atStartOfDay();
+        LocalDateTime endOfDay = startOfDay.plusDays(1).minusSeconds(1);
+
+        List<Ticket_code> tickets = ticketCodeRepository.findTicket_codesByModuleIdAndDate(moduleId, startOfDay, endOfDay);
+        
+        return tickets.stream().map(ticket -> new TicketHistoryDTO(
+            ticket.getCode(),
+                ticket.getService().getName(),
+                ticket.getCustomer().getFullname()
+        )).collect(Collectors.toList());
     }
 
     private boolean isNewMonth(Ticket_code lastCode) {

@@ -2,8 +2,6 @@ package com.vash.entel.service;
 
 import com.vash.entel.dto.NextPendingTicketResponseDTO;
 import com.vash.entel.model.entity.Ticket_code;
-import com.vash.entel.model.entity.WaitingQueue;
-import com.vash.entel.model.enums.AttentionStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.Map;

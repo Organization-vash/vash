@@ -2,8 +2,6 @@ package com.vash.entel.dto;
 
 import com.vash.entel.model.enums.Role;
 import com.vash.entel.model.enums.DocumentType;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import lombok.Getter;
