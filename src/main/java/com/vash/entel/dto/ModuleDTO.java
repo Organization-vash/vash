@@ -10,4 +10,3 @@ public class ModuleDTO {
     private Integer userId;   // Agregar campo para UserID
     private String userName;  // Agregar campo para el nombre del usuario
 }
-

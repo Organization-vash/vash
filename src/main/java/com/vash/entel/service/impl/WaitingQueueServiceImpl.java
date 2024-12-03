@@ -9,16 +9,15 @@ import com.vash.entel.model.entity.WaitingQueue;
 import com.vash.entel.model.enums.AttentionStatus;
 import com.vash.entel.model.enums.ModuleStatus;
 import com.vash.entel.model.enums.SuccessStatus;
-import com.vash.entel.repository.AttentionRepository;
-import com.vash.entel.repository.ModuleRepository;
-import com.vash.entel.repository.TicketCodeRepository;
-import com.vash.entel.repository.WaitingQueueRepository;
+import com.vash.entel.repository.*;
 import com.vash.entel.service.WaitingQueueService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import com.vash.entel.repository.SurveyRepository;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
@@ -27,6 +26,7 @@ import java.util.Optional;
 @Service
 public class WaitingQueueServiceImpl implements WaitingQueueService {
     private final WaitingQueueRepository waitingQueueRepository;
+    private final DerivateRepository derivateRepository;
     private final ModuleRepository moduleRepository;
     private final TicketCodeRepository ticketCodeRepository;
     private final AttentionRepository attentionRepository;
@@ -59,6 +59,29 @@ public class WaitingQueueServiceImpl implements WaitingQueueService {
             );
 
             updateWaitingQueueStatus(waitingQueue, AttentionStatus.ATTENDING);
+            return Optional.of(responseDTO);
+        }
+        else {
+            return Optional.empty();
+        }
+    }
+
+    @Transactional
+    @Scheduled(fixedRate = 3000)
+    public Optional<NextPendingTicketResponseDTO> checkTransferredTickets() {
+        Derivate waitingQueue = derivateRepository.findFirstByAttentionStatusOrderByCreatedAtAsc(AttentionStatus.TRANSFERRED);
+
+        if (waitingQueue != null) {
+            Ticket_code ticketCode = waitingQueue.getTicketCode();
+
+            NextPendingTicketResponseDTO responseDTO = new NextPendingTicketResponseDTO(
+                    ticketCode.getCode(),
+                    ticketCode.getService().getName(),
+                    ticketCode.getCustomer().getDocNumber(),
+                    ticketCode.getCustomer().getFullname(),
+                    ticketCode.getId()
+            );
+
             return Optional.of(responseDTO);
         }
         else {
@@ -148,6 +171,18 @@ public class WaitingQueueServiceImpl implements WaitingQueueService {
         waitingQueueRepository.save(waitingQueue);
     }
 
+    @Override
+    public void addDerivateToQueue(Ticket_code ticketCode) {
+        Derivate derivate = new Derivate();
+        derivate.setTicketCode(ticketCode);
+        derivate.setCustomer(ticketCode.getCustomer());
+        derivate.setCreatedAt(LocalDateTime.now());
+        derivate.setAttentionStatus(AttentionStatus.TRANSFERRED);
+        derivate.setAttention(ticketCode.getAttention());
+
+        derivateRepository.save(derivate);
+    }
+
     // Obtener el último ID del ticket aceptado
     public Optional<Integer> getLastAcceptedTicketId() {
         return Optional.ofNullable(lastAcceptedTicketId);
@@ -156,11 +191,6 @@ public class WaitingQueueServiceImpl implements WaitingQueueService {
     private void updateWaitingQueueStatus(WaitingQueue waitingQueue, AttentionStatus status) {
         waitingQueue.setAttentionStatus(status);
         waitingQueueRepository.save(waitingQueue);
-    }
-
-    // Almacenar el último ticket consultado en lastAcceptedTicketId antes de llamar a acceptTicket
-    public void storeLastAcceptedTicketId() {
-        lastAcceptedTicketId = lastQueriedTicketCodeId;
     }
 
     // Actualizar el estado de atención a ATTEND o NOT_ATTENDING
