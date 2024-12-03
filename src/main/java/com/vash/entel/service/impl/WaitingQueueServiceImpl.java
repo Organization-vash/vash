@@ -77,39 +77,60 @@ public class WaitingQueueServiceImpl implements WaitingQueueService {
             return ResponseEntity.ok(Map.of("message", "No se solicitó próximo ticket en cola"));
         }
 
+
         User currentAdviser = authService.getAuthenticatedUser(request);
         if (currentAdviser.getRole() != Role.ADVISER) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("message", "Solo los asesores pueden aceptar tickets"));
         }
 
+        // Buscar el ticket consultado previamente
         Ticket_code ticketCode = ticketCodeRepository.findById(lastQueriedTicketCodeId)
                 .orElseThrow(() -> new RuntimeException("Ticket code not found"));
 
+        // Buscar el módulo asociado
         Module module = moduleRepository.findById(moduleId)
                 .orElseThrow(() -> new RuntimeException("Module not found"));
         ticketCode.setModule(module);
 
+        // Crear una nueva atención
         Attention attention = new Attention();
         attention.setUser(ticketCode.getCustomer());
         attention.setAdviser(currentAdviser);        // Asesor autenticado
+
         attention.setCreated_at(LocalDateTime.now());
         attention.setAttentionStatus(AttentionStatus.ATTENDING);
 
+        // Guardar la atención en la base de datos
         Attention savedAttention = attentionRepository.save(attention);
 
+        // Asociar el servicio principal del ticket a la atención
+        com.vash.entel.model.entity.Service service = ticketCode.getService(); // Servicio principal del ticket
+        if (service == null) {
+            throw new RuntimeException("El ticket no tiene un servicio asociado");
+        }
+        savedAttention.getServices().add(service); // Asociar el servicio a la atención
+        attentionRepository.save(savedAttention); // Guardar la relación en attention_services
+
+        // Actualizar el ticket con la atención creada
         ticketCode.setAttention(savedAttention);
         ticketCodeRepository.save(ticketCode);
 
+        // Actualizar el estado del ticket en la cola de espera
         WaitingQueue waitingQueue = waitingQueueRepository.findByTicketCode(ticketCode)
                 .orElseThrow(() -> new RuntimeException("No se encontró la cola de espera para este ticket"));
-
         updateWaitingQueueStatus(waitingQueue, AttentionStatus.ATTENDING);
-        lastAcceptedTicketId = lastQueriedTicketCodeId;
 
+        // Actualizar el último ID de ticket aceptado
+        lastAcceptedTicketId = lastQueriedTicketCodeId;
         lastQueriedTicketCodeId = null;
 
-        return ResponseEntity.ok(Map.of("message", "Ticket accepted", "id", String.valueOf(ticketCode.getId())));
+        // Devuelve el ticketId y el attentionId
+        return ResponseEntity.ok(Map.of(
+                "message", "Ticket accepted y servicio registrado en attention_services",
+                "ticketId", String.valueOf(ticketCode.getId()),
+                "attentionId", String.valueOf(savedAttention.getId()) // Agregar el attentionId
+        ));
     }
 
     @Override
