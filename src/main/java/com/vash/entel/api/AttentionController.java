@@ -1,4 +1,5 @@
 package com.vash.entel.api;
+
 import com.vash.entel.dto.TicketHistoryDTO;
 import com.vash.entel.model.entity.Survey;
 import com.vash.entel.model.enums.AttentionStatus;
@@ -20,6 +21,7 @@ import java.util.Map;
 public class AttentionController {
     private final WaitingQueueServiceImpl waitingQueueService;
     private final AttentionService attentionService;
+    private final TicketCodeService ticketCodeService;
 
     @GetMapping("/next")
     public ResponseEntity<?> getNextPendingTicket(@RequestParam("moduleId") Integer moduleId){
@@ -29,11 +31,9 @@ public class AttentionController {
     }
 
     @PostMapping("/accept")
-public ResponseEntity<Map<String, String>> acceptTicket(@RequestParam Integer moduleId) {
-    return waitingQueueService.acceptTicket(moduleId);
-}
-
-
+    public ResponseEntity<Map<String, String>> acceptTicket(@RequestParam Integer moduleId) {
+        return waitingQueueService.acceptTicket(moduleId);
+    }
 
     @PostMapping("/reject")
     public ResponseEntity<Map<String, String>> rejectTicket() {
@@ -84,7 +84,6 @@ public ResponseEntity<Map<String, String>> acceptTicket(@RequestParam Integer mo
         attentionService.addServiceToAttention(attentionId, serviceId);
         return ResponseEntity.ok(Map.of("message", "Servicio agregado a la atención con éxito"));
     }
-    
 
     @PostMapping("/{attentionId}/remove-service")
     public ResponseEntity<Map<String, String>> removeServiceFromAttention(
@@ -93,6 +92,7 @@ public ResponseEntity<Map<String, String>> acceptTicket(@RequestParam Integer mo
         attentionService.removeServiceFromAttention(attentionId, serviceId);
         return ResponseEntity.ok(Map.of("message", "Servicio eliminado de la atención con éxito"));
     }
+
     @GetMapping("/getHistory")
     public ResponseEntity<List<TicketHistoryDTO>> getHistoryByModule(@RequestParam Integer moduleId){
         List<TicketHistoryDTO> history = ticketCodeService.getTodayTicketsByModule(moduleId);
