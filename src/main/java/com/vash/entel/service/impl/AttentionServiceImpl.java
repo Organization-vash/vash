@@ -18,7 +18,6 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -27,10 +26,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
 @RequiredArgsConstructor
-@org.springframework.stereotype.Service 
-
+@org.springframework.stereotype.Service
 public class AttentionServiceImpl implements AttentionService {
     private final DerivateRepository derivateRepository;
     private final AttentionRepository attentionRepository;
