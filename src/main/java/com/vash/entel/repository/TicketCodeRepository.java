@@ -19,4 +19,6 @@ public interface TicketCodeRepository extends JpaRepository<Ticket_code, Integer
     @Query("SELECT t FROM Ticket_code t " +
            "WHERE t.module.id = :moduleId AND t.created BETWEEN :startOfDay AND :endOfDay")
     List<Ticket_code> findTicket_codesByModuleIdAndDate(Integer moduleId, LocalDateTime startOfDay, LocalDateTime endOfDay);
+
+    Optional<Ticket_code> findTopByOrderByCreatedDesc();
 }
