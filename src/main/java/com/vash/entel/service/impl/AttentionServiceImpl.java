@@ -3,12 +3,15 @@ package com.vash.entel.service.impl;
 import com.vash.entel.exception.ResourceNotFoundException;
 import com.vash.entel.exception.BadRequestException;
 import com.vash.entel.model.entity.Attention;
+import com.vash.entel.model.entity.Derivate;
 import com.vash.entel.model.entity.Service;
 import com.vash.entel.model.enums.AttentionStatus;
 import com.vash.entel.model.enums.SuccessStatus;
 import com.vash.entel.repository.AttentionRepository;
+import com.vash.entel.repository.DerivateRepository;
 import com.vash.entel.repository.ServiceRepository;
 import com.vash.entel.service.AttentionService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
@@ -29,14 +32,9 @@ import java.util.stream.Collectors;
 @org.springframework.stereotype.Service 
 
 public class AttentionServiceImpl implements AttentionService {
-
+    private final DerivateRepository derivateRepository;
     private final AttentionRepository attentionRepository;
     private final ServiceRepository serviceRepository;
-
-    public AttentionServiceImpl(AttentionRepository attentionRepository, ServiceRepository serviceRepository) {
-        this.attentionRepository = attentionRepository;
-        this.serviceRepository = serviceRepository;
-    }
 
     @Override
     public void addServiceToAttention(Integer attentionId, Integer serviceId) {
@@ -67,6 +65,15 @@ public class AttentionServiceImpl implements AttentionService {
     @Override
     public ResponseEntity<Map<String, String>> finalizeAttention(Integer attentionId) {
         Optional<Attention> attentionOpt = attentionRepository.findById(attentionId);
+
+        Optional<Derivate> derivate = derivateRepository.findFirstByAttentionStatusOrderByCreatedAtDesc(AttentionStatus.TRANSFERRED);
+
+        if (derivate.isPresent()) {
+            Derivate derivateDerivate = derivate.get();
+            derivateDerivate.setAttention(attentionOpt.get());
+            derivateDerivate.setAttentionStatus(AttentionStatus.ATTEND);
+            derivateRepository.save(derivateDerivate);
+        }
 
         if (attentionOpt.isPresent()) {
             Attention attention = attentionOpt.get();

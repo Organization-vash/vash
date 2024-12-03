@@ -53,4 +53,16 @@ public class TicketCodeController {
         List<SearchCodeDTO> tickets = ticketCodeService.searchTicketsByCode(code);
         return ResponseEntity.ok(tickets);
     }
+
+    @PostMapping("/derivate")
+    public ResponseEntity<String> transferTicketToModule(
+            @RequestParam Integer ticketId,
+            @RequestParam Integer moduleId) {
+        try {
+            ticketCodeService.transferTicketToModule(ticketId, moduleId);
+            return new ResponseEntity<>("Ticket transferido exitosamente", HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
 }

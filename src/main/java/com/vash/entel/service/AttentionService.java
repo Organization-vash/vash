@@ -16,4 +16,3 @@ public interface AttentionService {
     List<Map<String, Object>> getReportData();
 
 }
-

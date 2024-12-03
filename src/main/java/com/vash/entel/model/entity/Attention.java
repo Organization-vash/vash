@@ -16,6 +16,7 @@ public class Attention {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(name = "time", nullable = true)
     private LocalDateTime time;
 
     @Column(name = "created_at", nullable = false)

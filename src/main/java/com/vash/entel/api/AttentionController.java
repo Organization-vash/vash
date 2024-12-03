@@ -1,14 +1,13 @@
 package com.vash.entel.api;
 
+import com.vash.entel.dto.NextPendingTicketResponseDTO;
 import com.vash.entel.dto.TicketHistoryDTO;
-import com.vash.entel.model.entity.Survey;
 import com.vash.entel.model.enums.AttentionStatus;
 import com.vash.entel.service.AttentionService;
 import com.vash.entel.service.TicketCodeService;
 import com.vash.entel.model.enums.SuccessStatus;
 import com.vash.entel.service.impl.WaitingQueueServiceImpl;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -144,4 +143,10 @@ public class AttentionController {
         return ResponseEntity.ok(history);
     }
 
+    @GetMapping("/transferred-tickets")
+    public ResponseEntity<?> checkTransferredTickets(){
+        return waitingQueueService.checkTransferredTickets()
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.noContent().build());
+    }
 }

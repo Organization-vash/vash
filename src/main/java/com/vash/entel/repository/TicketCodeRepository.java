@@ -3,6 +3,7 @@ package com.vash.entel.repository;
 import com.vash.entel.model.entity.Agency;
 import com.vash.entel.model.entity.Service;
 import com.vash.entel.model.entity.Ticket_code;
+import com.vash.entel.model.enums.AttentionStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -35,4 +36,6 @@ public interface TicketCodeRepository extends JpaRepository<Ticket_code, Integer
     List<Ticket_code> findTicket_codesByModuleIdAndDate(Integer moduleId, LocalDateTime startOfDay, LocalDateTime endOfDay);
 
     Optional<Ticket_code> findTopByOrderByCreatedDesc();
+
+    Optional<Ticket_code> findByIdAndAttention_AttentionStatus(Integer ticketId, AttentionStatus attentionStatus);
 }
