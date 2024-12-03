@@ -104,7 +104,6 @@ public class WaitingQueueServiceImpl implements WaitingQueueService {
             return ResponseEntity.ok(Map.of("message", "No se solicitó próximo ticket en cola"));
         }
 
-
         User currentAdviser = authService.getAuthenticatedUser(request);
         if (currentAdviser.getRole() != Role.ADVISER) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
