@@ -1,19 +1,12 @@
 package com.vash.entel.service.impl;
 
 import com.vash.entel.dto.NextPendingTicketResponseDTO;
-import com.vash.entel.model.entity.Attention;
 import com.vash.entel.model.entity.*;
 import com.vash.entel.model.entity.Module;
-import com.vash.entel.model.entity.Ticket_code;
-import com.vash.entel.model.entity.WaitingQueue;
 import com.vash.entel.model.enums.AttentionStatus;
 import com.vash.entel.model.enums.ModuleStatus;
 import com.vash.entel.model.enums.Role;
 import com.vash.entel.model.enums.SuccessStatus;
-import com.vash.entel.repository.AttentionRepository;
-import com.vash.entel.repository.ModuleRepository;
-import com.vash.entel.repository.TicketCodeRepository;
-import com.vash.entel.repository.WaitingQueueRepository;
 import com.vash.entel.service.AuthService;
 import com.vash.entel.repository.*;
 import com.vash.entel.service.WaitingQueueService;
@@ -28,7 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
-
+import java.util.HashMap;
+import java.util.List;
 @RequiredArgsConstructor
 @Service
 public class WaitingQueueServiceImpl implements WaitingQueueService {
@@ -292,5 +286,28 @@ public class WaitingQueueServiceImpl implements WaitingQueueService {
         attention.setSurvey(savedSurvey);
         attentionRepository.save(attention);
         return ResponseEntity.ok(Map.of("message", "Survey registered successfully"));
+    }
+    @Override
+    public List<WaitingQueue> getTicketsInWaitingState() {
+        return waitingQueueRepository.findByAttentionStatus(AttentionStatus.WAITING);
+    }
+    
+    
+    @Override
+    public List<Map<String, Object>> getTicketsInAttendingState() {
+        List<WaitingQueue> attendingQueues = waitingQueueRepository.findByAttentionStatus(AttentionStatus.ATTENDING);
+        return attendingQueues.stream().map(queue -> {
+            Map<String, Object> ticketData = new HashMap<>();
+            ticketData.put("ticketCode", queue.getTicketCode().getCode());
+            
+            // Usamos el ID del módulo o un valor por defecto si no hay módulo asignado
+            if (queue.getTicketCode().getModule() != null) {
+                ticketData.put("module", queue.getTicketCode().getModule().getId()); // Cambiado para usar el ID
+            } else {
+                ticketData.put("module", "Sin módulo asignado");
+            }
+            
+            return ticketData;
+        }).toList();
     }
 }

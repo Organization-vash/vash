@@ -5,7 +5,7 @@ import com.vash.entel.model.enums.Role;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import javax.net.ssl.SSLSession;
+
 import java.time.LocalDateTime;
 
 @Data

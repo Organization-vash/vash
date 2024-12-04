@@ -9,45 +9,34 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PiePlot;
-import org.jfree.chart.renderer.category.BarRenderer;
+
 import org.springframework.stereotype.Service;
 
-import java.awt.*;
 import java.awt.Color;
 import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.ChartUtils;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
-import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-
-import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.apache.poi.util.IOUtils;
 
-
-
-import com.vash.entel.repository.SurveyRepository;
-import com.vash.entel.service.SurveyReportService;
-import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
+
 import org.apache.poi.ss.usermodel.Workbook;
 
 @Service
 @RequiredArgsConstructor
 public class SurveyReportServiceImpl implements SurveyReportService {
-    //private final SurveyRepository surveyReportRepository;
+    // private final SurveyRepository surveyReportRepository;
     private final SurveyRepository surveyRepository;
 
     @Override
@@ -58,9 +47,9 @@ public class SurveyReportServiceImpl implements SurveyReportService {
         // Convertir el resultado a una lista de mapas clave-valor
         return rawData.stream().map(row -> Map.of(
                 "adviserUsername", row[0], // Username del asesor
-                "averageValue", row[1],   // Promedio de la encuesta
-                "quantity", row[2],       // Cantidad de encuestas
-                "consultDate", row[3]     // Fecha de consulta
+                "averageValue", row[1], // Promedio de la encuesta
+                "quantity", row[2], // Cantidad de encuestas
+                "consultDate", row[3] // Fecha de consulta
         )).collect(Collectors.toList());
     }
 
@@ -78,17 +67,17 @@ public class SurveyReportServiceImpl implements SurveyReportService {
         JFreeChart chart = ChartFactory.createPieChart(
                 "Porcentaje de Atenciones realizadas por Asesor",
                 dataset,
-                true,  // incluir leyenda
-                true,  // incluir tooltips
-                false  // URLs
+                true, // incluir leyenda
+                true, // incluir tooltips
+                false // URLs
         );
 
         // Personalizar el renderizador del gráfico para mostrar porcentajes
         PiePlot plot = (PiePlot) chart.getPlot();
         plot.setLabelGenerator(new StandardPieSectionLabelGenerator(
-                "{0}: {2}",  // {0}: clave, {1}: valor, {2}: porcentaje
-                new DecimalFormat("0"),  // Formato para valores absolutos
-                new DecimalFormat("0.00%")  // Formato para porcentajes
+                "{0}: {2}", // {0}: clave, {1}: valor, {2}: porcentaje
+                new DecimalFormat("0"), // Formato para valores absolutos
+                new DecimalFormat("0.00%") // Formato para porcentajes
         ));
 
         // Cambiar el color de fondo
@@ -100,7 +89,6 @@ public class SurveyReportServiceImpl implements SurveyReportService {
         ChartUtils.writeChartAsPNG(byteArrayOutputStream, chart, 800, 600);
         return byteArrayOutputStream.toByteArray();
     }
-
 
     @Override
     public byte[] generateBarChart() throws IOException {
@@ -117,8 +105,7 @@ public class SurveyReportServiceImpl implements SurveyReportService {
                 "Promedio de Calificación por Asesor", // Título
                 "Asesor", // Etiqueta del eje X
                 "Promedio", // Etiqueta del eje Y
-                dataset
-        );
+                dataset);
 
         // Obtener el CategoryPlot para personalización
         CategoryPlot plot = chart.getCategoryPlot();
@@ -138,7 +125,6 @@ public class SurveyReportServiceImpl implements SurveyReportService {
         ChartUtils.writeChartAsPNG(byteArrayOutputStream, chart, 800, 600);
         return byteArrayOutputStream.toByteArray();
     }
-
 
     @Override
     public byte[] generateExcelReport() throws IOException {
@@ -201,6 +187,5 @@ public class SurveyReportServiceImpl implements SurveyReportService {
 
         return outputStream.toByteArray();
     }
-
 
 }

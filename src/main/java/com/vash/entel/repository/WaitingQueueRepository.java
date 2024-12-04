@@ -7,9 +7,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
-
+import java.util.List;
 @Repository
 public interface WaitingQueueRepository extends JpaRepository<WaitingQueue, Integer> {
-    WaitingQueue findFirstByAttentionStatusOrderByCreatedAtAsc(AttentionStatus status);
+
     Optional<WaitingQueue> findByTicketCode(Ticket_code ticketCode);
+    List<WaitingQueue> findByAttentionStatus(AttentionStatus status);
+    WaitingQueue findFirstByAttentionStatusOrderByCreatedAtAsc(AttentionStatus status);
 }

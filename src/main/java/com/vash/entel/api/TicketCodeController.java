@@ -5,7 +5,9 @@ import com.vash.entel.dto.ServiceDTO;
 import com.vash.entel.mapper.ServiceMapper;
 import com.vash.entel.model.entity.Agency;
 import com.vash.entel.model.entity.Service;
+import com.vash.entel.model.entity.WaitingQueue;
 import com.vash.entel.service.TicketCodeService;
+import com.vash.entel.service.WaitingQueueService;
 
 import com.vash.entel.service.impl.AgencyServiceImpl;
 import com.vash.entel.service.impl.ServiceServiceImpl;
@@ -26,6 +28,7 @@ public class TicketCodeController {
     private final ServiceServiceImpl serviceService;
     private final AgencyServiceImpl agencyService;
     private final ServiceMapper serviceMapper;
+    private final WaitingQueueService waitingQueueService; //
 
     @PostMapping("/generateCode")
     private ResponseEntity<Map<String, Object>> generateTicketCode(
@@ -65,4 +68,18 @@ public class TicketCodeController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+    @GetMapping("/tickets/waiting")
+    public ResponseEntity<List<WaitingQueue>> getTicketsInWaitingState() {
+        List<WaitingQueue> waitingTickets = waitingQueueService.getTicketsInWaitingState();
+        return ResponseEntity.ok(waitingTickets);
+    }
+
+    @GetMapping("/tickets/attending")
+public ResponseEntity<List<Map<String, Object>>> getTicketsInAttendingState() {
+    List<Map<String, Object>> attendingTickets = waitingQueueService.getTicketsInAttendingState();
+    return ResponseEntity.ok(attendingTickets);
+}
+
+
+
 }
